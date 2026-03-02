@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
 
       # Defensive: the self-hosted runner's $HOME is persistent across jobs.
       # Other workflows (e.g. terraform-provider-turingpi's cli-smoketest)
