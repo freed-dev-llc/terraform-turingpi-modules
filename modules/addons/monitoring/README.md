@@ -1,6 +1,6 @@
 # Kubernetes Monitoring Module (kube-prometheus-stack)
 
-[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-jfreed--dev%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/addons-monitoring)
+[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-freed--dev--llc%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi/latest/submodules/addons-monitoring)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Terraform module to deploy the [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) for comprehensive Kubernetes monitoring.
@@ -31,7 +31,7 @@ For nodes with limited storage (e.g., 32GB eMMC), reduce storage sizes:
 
 ```hcl
 module "monitoring" {
-  source = "jfreed-dev/modules/turingpi//modules/addons/monitoring"
+  source = "freed-dev-llc/modules/turingpi//modules/addons/monitoring"
 
   grafana_admin_password  = "your-secure-password"
   prometheus_storage_size = "10Gi"  # Reduced for eMMC
@@ -42,7 +42,7 @@ For clusters **without storage** (e.g., Talos without Longhorn), set `persistenc
 
 ```hcl
 module "monitoring" {
-  source = "jfreed-dev/modules/turingpi//modules/addons/monitoring"
+  source = "freed-dev-llc/modules/turingpi//modules/addons/monitoring"
 
   grafana_admin_password = "your-secure-password"
   persistence_enabled    = false  # Ephemeral mode - data lost on restart
@@ -66,7 +66,7 @@ If you need to disable this behavior:
 
 ```hcl
 module "monitoring" {
-  source = "jfreed-dev/modules/turingpi//modules/addons/monitoring"
+  source = "freed-dev-llc/modules/turingpi//modules/addons/monitoring"
 
   grafana_admin_password = "your-secure-password"
   privileged_namespace   = false  # Don't create namespace with PSA labels
@@ -77,7 +77,7 @@ module "monitoring" {
 
 ```hcl
 module "monitoring" {
-  source  = "jfreed-dev/modules/turingpi//modules/addons/monitoring"
+  source  = "freed-dev-llc/modules/turingpi//modules/addons/monitoring"
   version = ">= 1.3.0"
 
   # Change default password!

@@ -1,6 +1,6 @@
 # Longhorn Distributed Storage Module
 
-[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-jfreed--dev%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/addons-longhorn)
+[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-freed--dev--llc%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi/latest/submodules/addons-longhorn)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Terraform module to deploy [Longhorn](https://longhorn.io/) distributed block storage on a Kubernetes cluster.
@@ -9,7 +9,7 @@ Terraform module to deploy [Longhorn](https://longhorn.io/) distributed block st
 
 ```hcl
 module "longhorn" {
-  source  = "jfreed-dev/modules/turingpi//modules/addons/longhorn"
+  source  = "freed-dev-llc/modules/turingpi//modules/addons/longhorn"
   version = ">= 1.3.0"
 
   # Basic configuration
@@ -164,7 +164,7 @@ For nodes with NVMe drives, you can create an optimized storage class:
 
 ```hcl
 module "longhorn" {
-  source = "jfreed-dev/modules/turingpi//modules/addons/longhorn"
+  source = "freed-dev-llc/modules/turingpi//modules/addons/longhorn"
 
   create_nvme_storage_class = true
   nvme_replica_count        = 2  # Lower replica count for performance

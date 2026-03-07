@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Documentation
-    url: https://registry.terraform.io/modules/jfreed-dev/modules/turingpi
+    url: https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi
     about: Check the Terraform Registry for module documentation

@@ -36,7 +36,7 @@ pip install pre-commit
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/jfreed-dev/terraform-turingpi-modules.git
+   git clone https://github.com/freed-dev-llc/terraform-turingpi-modules.git
    cd terraform-turingpi-modules
    ```
 
@@ -102,7 +102,7 @@ All PRs must pass:
 
 - Terraform validation for all 8 modules
 - Security scan (Trivy)
-- Code owner review (@jfreed-dev)
+- Code owner review (@freed-dev-llc)
 
 ## Module Structure
 
@@ -207,8 +207,8 @@ Releases are created by tagging the main branch. All releases are GPG-signed.
 
 After pushing the tag:
 
-1. Verify the release appears on [GitHub Releases](https://github.com/jfreed-dev/terraform-turingpi-modules/releases)
-2. Confirm it syncs to [Terraform Registry](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi)
+1. Verify the release appears on [GitHub Releases](https://github.com/freed-dev-llc/terraform-turingpi-modules/releases)
+2. Confirm it syncs to [Terraform Registry](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi)
 
 ### Requirements
 

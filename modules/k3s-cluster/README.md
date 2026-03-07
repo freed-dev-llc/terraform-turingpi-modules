@@ -1,6 +1,6 @@
 # K3s Cluster Module
 
-[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-jfreed--dev%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/k3s-cluster)
+[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-freed--dev--llc%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi/latest/submodules/k3s-cluster)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Terraform module to deploy a K3s Kubernetes cluster on Turing Pi 2.5 nodes running Armbian (or other Debian-based distributions).
@@ -13,7 +13,7 @@ This module connects to nodes via SSH, prepares them (packages, NVMe storage), a
 
 ```hcl
 module "k3s" {
-  source  = "jfreed-dev/modules/turingpi//modules/k3s-cluster"
+  source  = "freed-dev-llc/modules/turingpi//modules/k3s-cluster"
   version = ">= 1.3.0"
 
   cluster_name = "my-cluster"
@@ -50,7 +50,7 @@ module "k3s" {
 
 ```hcl
 module "k3s" {
-  source  = "jfreed-dev/modules/turingpi//modules/k3s-cluster"
+  source  = "freed-dev-llc/modules/turingpi//modules/k3s-cluster"
   version = ">= 1.3.0"
 
   cluster_name = "my-cluster"
@@ -82,7 +82,7 @@ variable "ssh_password" {
 
 ```hcl
 module "k3s" {
-  source  = "jfreed-dev/modules/turingpi//modules/k3s-cluster"
+  source  = "freed-dev-llc/modules/turingpi//modules/k3s-cluster"
   version = ">= 1.3.0"
 
   cluster_name = "homelab"
@@ -214,7 +214,7 @@ After cluster creation, deploy addons using the kubeconfig output:
 ```hcl
 # K3s cluster
 module "k3s" {
-  source = "jfreed-dev/modules/turingpi//modules/k3s-cluster"
+  source = "freed-dev-llc/modules/turingpi//modules/k3s-cluster"
   # ... configuration
 }
 
@@ -231,28 +231,28 @@ provider "kubectl" {
 
 # MetalLB for LoadBalancer services
 module "metallb" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/metallb"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   depends_on = [module.k3s]
   ip_range   = "192.168.1.200-192.168.1.220"
 }
 
 # Ingress NGINX
 module "ingress" {
-  source          = "jfreed-dev/modules/turingpi//modules/addons/ingress-nginx"
+  source          = "freed-dev-llc/modules/turingpi//modules/addons/ingress-nginx"
   depends_on      = [module.metallb]
   loadbalancer_ip = "192.168.1.200"
 }
 
 # Longhorn storage (with NVMe)
 module "longhorn" {
-  source            = "jfreed-dev/modules/turingpi//modules/addons/longhorn"
+  source            = "freed-dev-llc/modules/turingpi//modules/addons/longhorn"
   depends_on        = [module.k3s]
   default_data_path = "/var/lib/longhorn"
 }
 
 # Monitoring
 module "monitoring" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/monitoring"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/monitoring"
   depends_on = [module.longhorn]
 
   grafana_admin_password = var.grafana_password
@@ -261,7 +261,7 @@ module "monitoring" {
 
 # Portainer
 module "portainer" {
-  source          = "jfreed-dev/modules/turingpi//modules/addons/portainer"
+  source          = "freed-dev-llc/modules/turingpi//modules/addons/portainer"
   depends_on      = [module.metallb]
   loadbalancer_ip = "192.168.1.201"
 }

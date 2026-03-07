@@ -1,9 +1,9 @@
 # Terraform Turing Pi Modules
 
-[![Terraform Validate](https://github.com/jfreed-dev/terraform-turingpi-modules/actions/workflows/validate.yml/badge.svg)](https://github.com/jfreed-dev/terraform-turingpi-modules/actions/workflows/validate.yml)
-[![Security](https://github.com/jfreed-dev/terraform-turingpi-modules/actions/workflows/security.yml/badge.svg)](https://github.com/jfreed-dev/terraform-turingpi-modules/actions/workflows/security.yml)
-[![Release](https://img.shields.io/github/v/release/jfreed-dev/terraform-turingpi-modules?logo=github)](https://github.com/jfreed-dev/terraform-turingpi-modules/releases)
-[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-jfreed--dev%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest)
+[![Terraform Validate](https://github.com/freed-dev-llc/terraform-turingpi-modules/actions/workflows/validate.yml/badge.svg)](https://github.com/freed-dev-llc/terraform-turingpi-modules/actions/workflows/validate.yml)
+[![Security](https://github.com/freed-dev-llc/terraform-turingpi-modules/actions/workflows/security.yml/badge.svg)](https://github.com/freed-dev-llc/terraform-turingpi-modules/actions/workflows/security.yml)
+[![Release](https://img.shields.io/github/v/release/freed-dev-llc/terraform-turingpi-modules?logo=github)](https://github.com/freed-dev-llc/terraform-turingpi-modules/releases)
+[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-freed--dev--llc%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi/latest)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Reusable Terraform modules for Turing Pi cluster provisioning and management.
@@ -32,7 +32,7 @@ Reusable Terraform modules for Turing Pi cluster provisioning and management.
 ```hcl
 # Deploy Talos cluster
 module "talos" {
-  source  = "jfreed-dev/modules/turingpi//modules/talos-cluster"
+  source  = "freed-dev-llc/modules/turingpi//modules/talos-cluster"
   version = "~> 1.3.9"
 
   cluster_name     = "homelab"
@@ -53,7 +53,7 @@ module "talos" {
 
 # Add MetalLB
 module "metallb" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/metallb"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   depends_on = [module.talos]
   ip_range   = "192.168.1.200-192.168.1.220"
 }
@@ -64,7 +64,7 @@ module "metallb" {
 ```hcl
 # Deploy K3s cluster
 module "k3s" {
-  source  = "jfreed-dev/modules/turingpi//modules/k3s-cluster"
+  source  = "freed-dev-llc/modules/turingpi//modules/k3s-cluster"
   version = "~> 1.3.9"
 
   cluster_name = "homelab"
@@ -89,7 +89,7 @@ module "k3s" {
 
 # Add MetalLB
 module "metallb" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/metallb"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   depends_on = [module.k3s]
   ip_range   = "192.168.1.200-192.168.1.220"
 }
@@ -106,28 +106,28 @@ module "cluster" {
 
 # MetalLB for LoadBalancer services
 module "metallb" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/metallb"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   depends_on = [module.cluster]
   ip_range   = "192.168.1.200-192.168.1.220"
 }
 
 # Ingress controller
 module "ingress" {
-  source          = "jfreed-dev/modules/turingpi//modules/addons/ingress-nginx"
+  source          = "freed-dev-llc/modules/turingpi//modules/addons/ingress-nginx"
   depends_on      = [module.metallb]
   loadbalancer_ip = "192.168.1.200"
 }
 
 # Distributed storage
 module "longhorn" {
-  source                    = "jfreed-dev/modules/turingpi//modules/addons/longhorn"
+  source                    = "freed-dev-llc/modules/turingpi//modules/addons/longhorn"
   depends_on                = [module.cluster]
   create_nvme_storage_class = true
 }
 
 # Monitoring
 module "monitoring" {
-  source                 = "jfreed-dev/modules/turingpi//modules/addons/monitoring"
+  source                 = "freed-dev-llc/modules/turingpi//modules/addons/monitoring"
   depends_on             = [module.longhorn]
   grafana_admin_password = var.grafana_password
   storage_class          = "longhorn"
@@ -135,7 +135,7 @@ module "monitoring" {
 
 # Cluster management
 module "portainer" {
-  source          = "jfreed-dev/modules/turingpi//modules/addons/portainer"
+  source          = "freed-dev-llc/modules/turingpi//modules/addons/portainer"
   depends_on      = [module.metallb]
   loadbalancer_ip = "192.168.1.201"
 }
@@ -230,7 +230,7 @@ Longhorn reserves ~30% of disk space. For eMMC-constrained nodes:
 
 ```hcl
 module "monitoring" {
-  source = "jfreed-dev/modules/turingpi//modules/addons/monitoring"
+  source = "freed-dev-llc/modules/turingpi//modules/addons/monitoring"
 
   grafana_admin_password  = var.grafana_password
   prometheus_storage_size = "10Gi"  # Reduced from default 20Gi
@@ -240,7 +240,7 @@ module "monitoring" {
 ## Requirements
 
 - Terraform >= 1.0
-- [Turing Pi Provider](https://github.com/jfreed-dev/terraform-provider-turingpi) ~> 1.3.9 (for flashing)
+- [Turing Pi Provider](https://github.com/freed-dev-llc/terraform-provider-turingpi) ~> 1.3.9 (for flashing)
 - [Talos Provider](https://github.com/siderolabs/terraform-provider-talos) >= 0.7 (for Talos clusters)
 
 ## Verified Configurations

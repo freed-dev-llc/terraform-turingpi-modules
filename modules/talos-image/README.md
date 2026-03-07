@@ -10,7 +10,7 @@ Terraform module to generate custom Talos Linux images with system extensions us
 
 ```hcl
 module "talos_image" {
-  source = "jfreed-dev/modules/turingpi//modules/talos-image"
+  source = "freed-dev-llc/modules/turingpi//modules/talos-image"
 
   talos_version = "v1.9.2"
   architecture  = "arm64"
@@ -30,7 +30,7 @@ output "image_url" {
 
 ```hcl
 module "talos_image" {
-  source = "jfreed-dev/modules/turingpi//modules/talos-image"
+  source = "freed-dev-llc/modules/turingpi//modules/talos-image"
 
   talos_version = "v1.9.2"
   architecture  = "arm64"
@@ -48,7 +48,7 @@ module "talos_image" {
 
 ```hcl
 module "talos_image" {
-  source = "jfreed-dev/modules/turingpi//modules/talos-image"
+  source = "freed-dev-llc/modules/turingpi//modules/talos-image"
 
   talos_version = "v1.9.2"
   preset        = "longhorn"
@@ -119,14 +119,14 @@ For common configurations, the module uses cached schematic IDs to avoid API cal
 ```hcl
 # Step 1: Get the image URL
 module "talos_image" {
-  source        = "jfreed-dev/modules/turingpi//modules/talos-image"
+  source        = "freed-dev-llc/modules/turingpi//modules/talos-image"
   talos_version = "v1.9.2"
   preset        = "longhorn"
 }
 
 # Step 2: Flash nodes with the custom image
 module "flash_nodes" {
-  source = "jfreed-dev/modules/turingpi//modules/flash-nodes"
+  source = "freed-dev-llc/modules/turingpi//modules/flash-nodes"
 
   nodes = {
     node2 = { slot = 2 }
@@ -140,14 +140,14 @@ module "flash_nodes" {
 
 # Step 3: Deploy cluster
 module "cluster" {
-  source     = "jfreed-dev/modules/turingpi//modules/talos-cluster"
+  source     = "freed-dev-llc/modules/turingpi//modules/talos-cluster"
   depends_on = [module.flash_nodes]
   # ...
 }
 
 # Step 4: Deploy Longhorn (now works!)
 module "longhorn" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/longhorn"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/longhorn"
   depends_on = [module.cluster]
 
   talos_extensions_installed = true

@@ -130,7 +130,7 @@ terraform-turingpi-modules/
 
 | Module | Required Providers |
 |--------|-------------------|
-| flash-nodes | `jfreed-dev/turingpi` |
+| flash-nodes | `freed-dev-llc/turingpi` |
 | talos-cluster | `siderolabs/talos`, `hashicorp/kubernetes` |
 | k3s-cluster | `hashicorp/null` (SSH provisioner) |
 | metallb | `hashicorp/helm`, `hashicorp/kubernetes` |

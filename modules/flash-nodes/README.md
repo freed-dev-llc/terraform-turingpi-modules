@@ -1,6 +1,6 @@
 # Turing Pi Flash Nodes Module
 
-[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-jfreed--dev%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/flash-nodes)
+[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-freed--dev--llc%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi/latest/submodules/flash-nodes)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Terraform module to flash firmware to Turing Pi 2.5 nodes.
@@ -9,7 +9,7 @@ Terraform module to flash firmware to Turing Pi 2.5 nodes.
 
 ```hcl
 module "flash" {
-  source  = "jfreed-dev/flash-nodes/turingpi"
+  source  = "freed-dev-llc/flash-nodes/turingpi"
   version = ">= 1.3.0"
 
   nodes = {

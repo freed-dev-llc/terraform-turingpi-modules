@@ -1,6 +1,6 @@
 # MetalLB Kubernetes Addon Module
 
-[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-jfreed--dev%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/addons-metallb)
+[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-freed--dev--llc%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi/latest/submodules/addons-metallb)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Terraform module to deploy [MetalLB](https://metallb.universe.tf/) load balancer on a Kubernetes cluster.
@@ -19,7 +19,7 @@ provider "kubectl" {
 }
 
 module "metallb" {
-  source  = "jfreed-dev/metallb/kubernetes"
+  source  = "freed-dev-llc/metallb/kubernetes"
   version = ">= 1.3.0"
 
   ip_range = "192.168.1.200-192.168.1.220"

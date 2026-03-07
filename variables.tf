@@ -7,7 +7,7 @@
 #
 # Example:
 #   module "cluster" {
-#     source = "jfreed-dev/modules/turingpi//modules/talos-cluster"
+#     source = "freed-dev-llc/modules/turingpi//modules/talos-cluster"
 #     ...
 #   }
 

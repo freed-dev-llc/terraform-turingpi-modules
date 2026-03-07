@@ -19,7 +19,7 @@ output "usage_example" {
   description = "Example usage of submodules"
   value       = <<-EOT
     module "cluster" {
-      source  = "jfreed-dev/modules/turingpi//modules/talos-cluster"
+      source  = "freed-dev-llc/modules/turingpi//modules/talos-cluster"
       version = ">= 1.2.0"
       # ... configuration
     }

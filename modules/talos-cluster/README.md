@@ -1,6 +1,6 @@
 # Turing Pi Talos Cluster Module
 
-[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-jfreed--dev%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/talos-cluster)
+[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-freed--dev--llc%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi/latest/submodules/talos-cluster)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Terraform module to deploy a Talos Kubernetes cluster on Turing Pi 2.5 nodes using the native [Talos Terraform Provider](https://registry.terraform.io/providers/siderolabs/talos/latest).
@@ -9,7 +9,7 @@ Terraform module to deploy a Talos Kubernetes cluster on Turing Pi 2.5 nodes usi
 
 ```hcl
 module "cluster" {
-  source  = "jfreed-dev/modules/turingpi//modules/talos-cluster"
+  source  = "freed-dev-llc/modules/turingpi//modules/talos-cluster"
   version = ">= 1.3.0"
 
   cluster_name     = "my-cluster"
@@ -37,7 +37,7 @@ module "cluster" {
 
 ```hcl
 module "cluster" {
-  source  = "jfreed-dev/modules/turingpi//modules/talos-cluster"
+  source  = "freed-dev-llc/modules/turingpi//modules/talos-cluster"
   version = ">= 1.3.0"
 
   cluster_name     = "my-cluster"
@@ -137,7 +137,7 @@ After enabling NVMe storage, configure Longhorn to use it:
 
 ```hcl
 module "longhorn" {
-  source  = "jfreed-dev/modules/turingpi//modules/addons/longhorn"
+  source  = "freed-dev-llc/modules/turingpi//modules/addons/longhorn"
   version = ">= 1.3.0"
 
   depends_on = [module.cluster]

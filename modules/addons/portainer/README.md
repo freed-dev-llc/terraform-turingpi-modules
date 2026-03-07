@@ -1,6 +1,6 @@
 # Portainer Agent Module
 
-[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-jfreed--dev%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/addons-portainer)
+[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-freed--dev--llc%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi/latest/submodules/addons-portainer)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Terraform module to deploy the [Portainer](https://www.portainer.io/) agent for remote cluster management.
@@ -11,7 +11,7 @@ The agent allows you to connect this Kubernetes cluster to a Portainer CE (Commu
 
 ```hcl
 module "portainer" {
-  source  = "jfreed-dev/modules/turingpi//modules/addons/portainer"
+  source  = "freed-dev-llc/modules/turingpi//modules/addons/portainer"
   version = ">= 1.3.0"
 
   # Use LoadBalancer with MetalLB
@@ -136,12 +136,12 @@ If you have a Business Edition license, you can take advantage of:
 
 ```hcl
 module "metallb" {
-  source   = "jfreed-dev/modules/turingpi//modules/addons/metallb"
+  source   = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   ip_range = "192.168.1.80-192.168.1.89"
 }
 
 module "portainer" {
-  source          = "jfreed-dev/modules/turingpi//modules/addons/portainer"
+  source          = "freed-dev-llc/modules/turingpi//modules/addons/portainer"
   depends_on      = [module.metallb]
   loadbalancer_ip = "192.168.1.81"
 }
@@ -156,7 +156,7 @@ output "portainer_url" {
 ```hcl
 # Deploy Talos cluster
 module "cluster" {
-  source  = "jfreed-dev/modules/turingpi//modules/talos-cluster"
+  source  = "freed-dev-llc/modules/turingpi//modules/talos-cluster"
   version = ">= 1.3.0"
 
   cluster_name     = "homelab"
@@ -172,14 +172,14 @@ module "cluster" {
 
 # Deploy MetalLB for LoadBalancer support
 module "metallb" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/metallb"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   depends_on = [module.cluster]
   ip_range   = "192.168.1.200-192.168.1.220"
 }
 
 # Deploy Portainer agent
 module "portainer" {
-  source          = "jfreed-dev/modules/turingpi//modules/addons/portainer"
+  source          = "freed-dev-llc/modules/turingpi//modules/addons/portainer"
   depends_on      = [module.metallb]
   loadbalancer_ip = "192.168.1.201"
 }

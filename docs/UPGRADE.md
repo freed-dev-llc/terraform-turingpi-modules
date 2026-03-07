@@ -18,13 +18,13 @@ When upgrading to a new module version, update the `ref` tag in your module sour
 ```hcl
 # Before
 module "k3s_cluster" {
-  source = "github.com/jfreed-dev/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.3"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.3"
   # ...
 }
 
 # After
 module "k3s_cluster" {
-  source = "github.com/jfreed-dev/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.5"
   # ...
 }
 ```
@@ -51,7 +51,7 @@ The k3s-cluster module supports automatic version upgrades via the `k3s_version`
 
 ```hcl
 module "k3s_cluster" {
-  source = "github.com/jfreed-dev/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.5"
 
   k3s_version = "v1.31.4+k3s1"  # Update to new version
   # ...
@@ -90,7 +90,7 @@ curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.31.4+k3s1 K3S_URL=https://
 
 ```hcl
 module "metallb" {
-  source = "github.com/jfreed-dev/terraform-turingpi-modules//modules/addons/metallb?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/metallb?ref=v1.3.5"
 
   chart_version = "0.14.9"  # Update chart version
   ip_range      = "10.10.88.80-10.10.88.89"
@@ -107,7 +107,7 @@ module "metallb" {
 
 ```hcl
 module "ingress_nginx" {
-  source = "github.com/jfreed-dev/terraform-turingpi-modules//modules/addons/ingress-nginx?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/ingress-nginx?ref=v1.3.5"
 
   chart_version = "4.11.3"  # Update chart version
 }
@@ -123,7 +123,7 @@ module "ingress_nginx" {
 
 ```hcl
 module "longhorn" {
-  source = "github.com/jfreed-dev/terraform-turingpi-modules//modules/addons/longhorn?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/longhorn?ref=v1.3.5"
 
   chart_version = "1.7.2"  # Update chart version
 }
@@ -140,7 +140,7 @@ module "longhorn" {
 
 ```hcl
 module "monitoring" {
-  source = "github.com/jfreed-dev/terraform-turingpi-modules//modules/addons/monitoring?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/monitoring?ref=v1.3.5"
 
   chart_version          = "65.8.1"  # Update chart version
   grafana_admin_password = var.grafana_password
@@ -157,7 +157,7 @@ module "monitoring" {
 
 ```hcl
 module "cert_manager" {
-  source = "github.com/jfreed-dev/terraform-turingpi-modules//modules/addons/cert-manager?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/cert-manager?ref=v1.3.5"
 
   chart_version = "1.16.2"  # Update chart version
 }
@@ -267,7 +267,7 @@ Revert to previous module version:
 
 ```hcl
 module "k3s_cluster" {
-  source = "github.com/jfreed-dev/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.3"  # Previous version
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.3"  # Previous version
 }
 ```
 
@@ -292,6 +292,6 @@ helm rollback <release-name> <revision> -n <namespace>
 
 If you encounter issues during upgrade:
 
-1. Check the [GitHub Issues](https://github.com/jfreed-dev/terraform-turingpi-modules/issues)
+1. Check the [GitHub Issues](https://github.com/freed-dev-llc/terraform-turingpi-modules/issues)
 2. Review Terraform and Helm logs
 3. Open a new issue with upgrade details and error messages

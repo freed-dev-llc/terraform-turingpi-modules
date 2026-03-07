@@ -85,7 +85,7 @@ For Longhorn storage support, you MUST use a custom Talos image with iSCSI exten
 ```hcl
 # modules/talos-image usage
 module "talos_image" {
-  source = "jfreed-dev/modules/turingpi//modules/talos-image"
+  source = "freed-dev-llc/modules/turingpi//modules/talos-image"
 
   talos_version = "v1.9.2"
   architecture  = "arm64"
@@ -116,7 +116,7 @@ curl -L "https://factory.talos.dev/image/613e1592.../v1.9.2/metal-arm64.raw.xz" 
 
 ```hcl
 module "flash" {
-  source = "jfreed-dev/modules/turingpi//modules/flash-nodes"
+  source = "freed-dev-llc/modules/turingpi//modules/flash-nodes"
 
   nodes = {
     1 = { firmware = "./talos-longhorn-arm64.raw" }
@@ -138,7 +138,7 @@ resource "time_sleep" "wait_for_boot" {
 
 ```hcl
 module "talos_cluster" {
-  source     = "jfreed-dev/modules/turingpi//modules/talos-cluster"
+  source     = "freed-dev-llc/modules/turingpi//modules/talos-cluster"
   depends_on = [time_sleep.wait_for_boot]
 
   cluster_name     = "turing-cluster"
@@ -353,7 +353,7 @@ done
 
 ```hcl
 module "flash" {
-  source = "jfreed-dev/modules/turingpi//modules/flash-nodes"
+  source = "freed-dev-llc/modules/turingpi//modules/flash-nodes"
 
   nodes = {
     1 = { firmware = "./Armbian_trixie.img" }
@@ -411,7 +411,7 @@ done
 
 ```hcl
 module "k3s_cluster" {
-  source = "jfreed-dev/modules/turingpi//modules/k3s-cluster"
+  source = "freed-dev-llc/modules/turingpi//modules/k3s-cluster"
 
   cluster_name = "k3s-cluster"
 
@@ -527,7 +527,7 @@ flowchart LR
 ```hcl
 # Layer 1: Network - MetalLB
 module "metallb" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/metallb"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   depends_on = [module.cluster]
 
   ip_range             = "10.10.88.80-10.10.88.89"
@@ -536,7 +536,7 @@ module "metallb" {
 
 # Layer 2: Ingress
 module "ingress_nginx" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/ingress-nginx"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/ingress-nginx"
   depends_on = [module.metallb]
 
   # Optional: Fixed LoadBalancer IP
@@ -545,7 +545,7 @@ module "ingress_nginx" {
 
 # Layer 3: Certificates
 module "cert_manager" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/cert-manager"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/cert-manager"
   depends_on = [module.cluster]
 
   create_selfsigned_issuer = true
@@ -557,7 +557,7 @@ module "cert_manager" {
 
 # Layer 4: Storage
 module "longhorn" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/longhorn"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/longhorn"
   depends_on = [module.cluster]
 
   default_replica_count      = 2
@@ -568,7 +568,7 @@ module "longhorn" {
 
 # Layer 5: Observability
 module "monitoring" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/monitoring"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/monitoring"
   depends_on = [module.longhorn]
 
   grafana_admin_password  = var.grafana_password
@@ -580,7 +580,7 @@ module "monitoring" {
 
 # Layer 6: Management
 module "portainer" {
-  source     = "jfreed-dev/modules/turingpi//modules/addons/portainer"
+  source     = "freed-dev-llc/modules/turingpi//modules/addons/portainer"
   depends_on = [module.metallb]
 
   # Optional: Fixed LoadBalancer IP

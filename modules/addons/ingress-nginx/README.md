@@ -1,6 +1,6 @@
 # Ingress-NGINX Kubernetes Addon Module
 
-[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-jfreed--dev%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/jfreed-dev/modules/turingpi/latest/submodules/addons-ingress-nginx)
+[![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-freed--dev--llc%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi/latest/submodules/addons-ingress-nginx)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Terraform module to deploy [Ingress-NGINX](https://kubernetes.github.io/ingress-nginx/) controller on a Kubernetes cluster.
@@ -15,7 +15,7 @@ provider "helm" {
 }
 
 module "ingress" {
-  source  = "jfreed-dev/ingress-nginx/kubernetes"
+  source  = "freed-dev-llc/ingress-nginx/kubernetes"
   version = ">= 1.3.0"
 
   loadbalancer_ip = "192.168.1.200"  # Optional: use with MetalLB
@@ -74,12 +74,12 @@ When using with the MetalLB module, specify a `loadbalancer_ip` from your MetalL
 
 ```hcl
 module "metallb" {
-  source   = "jfreed-dev/metallb/kubernetes"
+  source   = "freed-dev-llc/metallb/kubernetes"
   ip_range = "192.168.1.200-192.168.1.220"
 }
 
 module "ingress" {
-  source          = "jfreed-dev/ingress-nginx/kubernetes"
+  source          = "freed-dev-llc/ingress-nginx/kubernetes"
   depends_on      = [module.metallb]
   loadbalancer_ip = "192.168.1.200"
 }
