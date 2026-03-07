@@ -117,6 +117,7 @@ variable "privileged_namespace" {
   default     = true
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "talos_extensions_installed" {
   description = "Acknowledge that required Talos extensions are installed (iscsi-tools, util-linux-tools). Set to true only after flashing nodes with a custom Talos image that includes these extensions. See README for Image Factory instructions."
   type        = bool
