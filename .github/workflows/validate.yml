@@ -11,7 +11,7 @@ on:
 jobs:
   validate:
     name: Validate
-    runs-on: self-hosted
+    runs-on: [self-hosted, linux]
 
     strategy:
       fail-fast: false
@@ -58,7 +58,7 @@ jobs:
 
   security:
     name: Security Scan
-    runs-on: self-hosted
+    runs-on: [self-hosted, linux]
 
     steps:
       - name: Checkout
