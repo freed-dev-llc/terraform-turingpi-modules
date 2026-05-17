@@ -77,14 +77,14 @@ module "cluster" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_local"></a> [local](#provider\_local) | >= 2.0 |
-| <a name="provider_talos"></a> [talos](#provider\_talos) | >= 0.7 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.6.1 |
+| <a name="provider_talos"></a> [talos](#provider\_talos) | 0.10.0 |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_cluster_endpoint"></a> [cluster\_endpoint](#input\_cluster\_endpoint) | Kubernetes API endpoint (<https://IP:6443>) | `string` | n/a | yes |
+| <a name="input_cluster_endpoint"></a> [cluster\_endpoint](#input\_cluster\_endpoint) | Kubernetes API endpoint (https://IP:6443) | `string` | n/a | yes |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the Kubernetes cluster | `string` | n/a | yes |
 | <a name="input_control_plane"></a> [control\_plane](#input\_control\_plane) | Control plane node configurations | <pre>list(object({<br/>    host     = string<br/>    hostname = optional(string)<br/>  }))</pre> | n/a | yes |
 | <a name="input_controlplane_patches"></a> [controlplane\_patches](#input\_controlplane\_patches) | Config patches for control plane nodes (YAML strings) | `list(string)` | `[]` | no |
@@ -111,6 +111,7 @@ module "cluster" {
 | <a name="output_machine_secrets"></a> [machine\_secrets](#output\_machine\_secrets) | Talos machine secrets (for backup) |
 | <a name="output_nvme_enabled"></a> [nvme\_enabled](#output\_nvme\_enabled) | Whether NVMe storage is configured |
 | <a name="output_nvme_mountpoint"></a> [nvme\_mountpoint](#output\_nvme\_mountpoint) | NVMe mount point (if enabled) |
+| <a name="output_talosconfig_path"></a> [talosconfig\_path](#output\_talosconfig\_path) | Path to talosconfig file (if written) |
 <!-- END_TF_DOCS -->
 
 ## NVMe Storage Configuration

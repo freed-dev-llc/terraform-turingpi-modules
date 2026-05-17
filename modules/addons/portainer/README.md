@@ -38,7 +38,7 @@ Then connect from your Portainer instance using the agent URL.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | >= 1.14 |
+| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | 1.19.0 |
 
 ## Inputs
 
@@ -51,7 +51,9 @@ Then connect from your Portainer instance using the agent URL.
 | <a name="input_log_level"></a> [log\_level](#input\_log\_level) | Agent log level (DEBUG, INFO, WARN, ERROR) | `string` | `"INFO"` | no |
 | <a name="input_memory_limit"></a> [memory\_limit](#input\_memory\_limit) | Memory limit | `string` | `"256Mi"` | no |
 | <a name="input_memory_request"></a> [memory\_request](#input\_memory\_request) | Memory request | `string` | `"64Mi"` | no |
+| <a name="input_namespace"></a> [namespace](#input\_namespace) | Kubernetes namespace for Portainer | `string` | `"portainer"` | no |
 | <a name="input_node_port"></a> [node\_port](#input\_node\_port) | NodePort port number (when service\_type is NodePort) | `number` | `30778` | no |
+| <a name="input_replicas"></a> [replicas](#input\_replicas) | Number of Portainer agent replicas | `number` | `1` | no |
 | <a name="input_service_type"></a> [service\_type](#input\_service\_type) | Service type: NodePort or LoadBalancer | `string` | `"LoadBalancer"` | no |
 
 ## Outputs

@@ -18,77 +18,29 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Generate docs for modules/flash-nodes
-        uses: terraform-docs/gh-actions@v1
+      - uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v5
         with:
-          working-dir: modules/flash-nodes
-          config-file: .terraform-docs.yml
-          output-file: README.md
-          output-method: inject
-          git-push: false
+          go-version: stable
 
-      - name: Generate docs for modules/k3s-cluster
-        uses: terraform-docs/gh-actions@v1
-        with:
-          working-dir: modules/k3s-cluster
-          config-file: .terraform-docs.yml
-          output-file: README.md
-          output-method: inject
-          git-push: false
+      - name: Install terraform-docs
+        # Pinned to v0.20.0 — the version shipped by terraform-docs/gh-actions@v1.4.1.
+        # The Docker action fails on the containerized self-hosted runner because
+        # workspace bind-mounts don't resolve in the host docker daemon.
+        run: go install github.com/terraform-docs/terraform-docs@v0.20.0
 
-      - name: Generate docs for modules/talos-cluster
-        uses: terraform-docs/gh-actions@v1
-        with:
-          working-dir: modules/talos-cluster
-          config-file: .terraform-docs.yml
-          output-file: README.md
-          output-method: inject
-          git-push: false
-
-      - name: Generate docs for modules/addons/metallb
-        uses: terraform-docs/gh-actions@v1
-        with:
-          working-dir: modules/addons/metallb
-          config-file: .terraform-docs.yml
-          output-file: README.md
-          output-method: inject
-          git-push: false
-
-      - name: Generate docs for modules/addons/ingress-nginx
-        uses: terraform-docs/gh-actions@v1
-        with:
-          working-dir: modules/addons/ingress-nginx
-          config-file: .terraform-docs.yml
-          output-file: README.md
-          output-method: inject
-          git-push: false
-
-      - name: Generate docs for modules/addons/longhorn
-        uses: terraform-docs/gh-actions@v1
-        with:
-          working-dir: modules/addons/longhorn
-          config-file: .terraform-docs.yml
-          output-file: README.md
-          output-method: inject
-          git-push: false
-
-      - name: Generate docs for modules/addons/monitoring
-        uses: terraform-docs/gh-actions@v1
-        with:
-          working-dir: modules/addons/monitoring
-          config-file: .terraform-docs.yml
-          output-file: README.md
-          output-method: inject
-          git-push: false
-
-      - name: Generate docs for modules/addons/portainer
-        uses: terraform-docs/gh-actions@v1
-        with:
-          working-dir: modules/addons/portainer
-          config-file: .terraform-docs.yml
-          output-file: README.md
-          output-method: inject
-          git-push: false
+      - name: Generate docs for all modules
+        run: |
+          for dir in \
+            modules/flash-nodes \
+            modules/k3s-cluster \
+            modules/talos-cluster \
+            modules/addons/metallb \
+            modules/addons/ingress-nginx \
+            modules/addons/longhorn \
+            modules/addons/monitoring \
+            modules/addons/portainer; do
+            terraform-docs --config .terraform-docs.yml --output-file README.md --output-mode inject "$dir"
+          done
 
       - name: Check for changes
         id: changes
