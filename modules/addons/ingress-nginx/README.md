@@ -34,16 +34,21 @@ module "ingress" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | 3.1.1 |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_chart_version"></a> [chart\_version](#input\_chart\_version) | Ingress-NGINX Helm chart version | `string` | `"4.11.3"` | no |
+| <a name="input_controller_replicas"></a> [controller\_replicas](#input\_controller\_replicas) | Number of controller replicas | `number` | `1` | no |
+| <a name="input_controller_resources"></a> [controller\_resources](#input\_controller\_resources) | Resource requests/limits for ingress controller | <pre>object({<br/>    requests = optional(object({<br/>      cpu    = optional(string, "100m")<br/>      memory = optional(string, "128Mi")<br/>    }), {})<br/>    limits = optional(object({<br/>      cpu    = optional(string, "500m")<br/>      memory = optional(string, "512Mi")<br/>    }), {})<br/>  })</pre> | `{}` | no |
 | <a name="input_default_ingress_class"></a> [default\_ingress\_class](#input\_default\_ingress\_class) | Make this the default ingress class | `bool` | `true` | no |
 | <a name="input_enable_admission_webhooks"></a> [enable\_admission\_webhooks](#input\_enable\_admission\_webhooks) | Enable admission webhooks | `bool` | `true` | no |
+| <a name="input_enable_metrics"></a> [enable\_metrics](#input\_enable\_metrics) | Enable Prometheus metrics | `bool` | `false` | no |
 | <a name="input_loadbalancer_ip"></a> [loadbalancer\_ip](#input\_loadbalancer\_ip) | Static IP for ingress LoadBalancer (optional) | `string` | `null` | no |
+| <a name="input_metrics_port"></a> [metrics\_port](#input\_metrics\_port) | Port for Prometheus metrics | `number` | `10254` | no |
+| <a name="input_namespace"></a> [namespace](#input\_namespace) | Kubernetes namespace for ingress-nginx | `string` | `"ingress-nginx"` | no |
 | <a name="input_timeout"></a> [timeout](#input\_timeout) | Helm install timeout in seconds | `number` | `300` | no |
 
 ## Outputs

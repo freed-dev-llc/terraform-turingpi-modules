@@ -33,7 +33,7 @@ module "flash" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.0 |
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | 1.3.10 |
 
 ## Inputs
 
