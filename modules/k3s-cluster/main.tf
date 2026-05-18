@@ -27,11 +27,85 @@ locals {
 }
 
 # =============================================================================
+# SSH Key Bootstrap
+# =============================================================================
+# When both ssh_key AND ssh_password are supplied for a node, push the public
+# key (derived from ssh_key) into the node's authorized_keys via a one-shot
+# password-auth session before anything else runs. Fixes #30 — fresh Armbian
+# images come with only the default root/1234 credentials and no way to
+# authenticate the user's private key on the very first connection.
+# Idempotent: grep -qxF before appending, so re-runs are no-ops.
+
+data "tls_public_key" "cp_bootstrap" {
+  count           = (var.control_plane.ssh_key != null && var.control_plane.ssh_password != null) ? 1 : 0
+  private_key_pem = var.control_plane.ssh_key
+}
+
+data "tls_public_key" "workers_bootstrap" {
+  for_each        = { for idx, w in var.workers : idx => w if w.ssh_key != null && w.ssh_password != null }
+  private_key_pem = each.value.ssh_key
+}
+
+resource "null_resource" "bootstrap_ssh_cp" {
+  count = (var.control_plane.ssh_key != null && var.control_plane.ssh_password != null) ? 1 : 0
+
+  triggers = {
+    host   = var.control_plane.host
+    pubkey = data.tls_public_key.cp_bootstrap[0].public_key_openssh
+  }
+
+  connection {
+    type     = "ssh"
+    host     = var.control_plane.host
+    user     = var.control_plane.ssh_user
+    password = var.control_plane.ssh_password
+    port     = var.control_plane.ssh_port
+    timeout  = "2m"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p ~/.ssh && chmod 700 ~/.ssh",
+      "touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys",
+      "grep -qxF '${trimspace(data.tls_public_key.cp_bootstrap[0].public_key_openssh)}' ~/.ssh/authorized_keys || echo '${trimspace(data.tls_public_key.cp_bootstrap[0].public_key_openssh)}' >> ~/.ssh/authorized_keys",
+    ]
+  }
+}
+
+resource "null_resource" "bootstrap_ssh_workers" {
+  for_each = { for idx, w in var.workers : idx => w if w.ssh_key != null && w.ssh_password != null }
+
+  triggers = {
+    host   = each.value.host
+    pubkey = data.tls_public_key.workers_bootstrap[each.key].public_key_openssh
+  }
+
+  connection {
+    type     = "ssh"
+    host     = each.value.host
+    user     = each.value.ssh_user
+    password = each.value.ssh_password
+    port     = each.value.ssh_port
+    timeout  = "2m"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p ~/.ssh && chmod 700 ~/.ssh",
+      "touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys",
+      "grep -qxF '${trimspace(data.tls_public_key.workers_bootstrap[each.key].public_key_openssh)}' ~/.ssh/authorized_keys || echo '${trimspace(data.tls_public_key.workers_bootstrap[each.key].public_key_openssh)}' >> ~/.ssh/authorized_keys",
+    ]
+  }
+}
+
+# =============================================================================
 # Control Plane Installation
 # =============================================================================
 
 # Prepare and install K3s on control plane
 resource "null_resource" "k3s_control_plane" {
+  depends_on = [null_resource.bootstrap_ssh_cp]
+
   triggers = {
     host         = var.control_plane.host
     k3s_version  = var.k3s_version
@@ -123,7 +197,10 @@ resource "null_resource" "k3s_control_plane" {
 resource "null_resource" "k3s_workers" {
   for_each = { for idx, worker in var.workers : idx => worker }
 
-  depends_on = [null_resource.k3s_control_plane]
+  depends_on = [
+    null_resource.k3s_control_plane,
+    null_resource.bootstrap_ssh_workers,
+  ]
 
   triggers = {
     host         = each.value.host

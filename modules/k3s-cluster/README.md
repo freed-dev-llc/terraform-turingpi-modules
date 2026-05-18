@@ -139,6 +139,7 @@ module "k3s" {
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | >= 3.0 |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | >= 4.0 |
 
 ## Inputs
 
