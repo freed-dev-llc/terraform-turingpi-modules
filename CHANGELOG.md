@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-05-17
+
+### Changed
+
+- **`modules/talos-image`**: declare `hashicorp/local` in `required_providers`. The module uses `data "local_file"` but the provider was previously inferred; explicit declaration is required by tflint and makes the contract clearer for consumers. Most users won't notice — Terraform/OpenTofu auto-resolve `hashicorp/local` from the registry.
+- Modules' READMEs (terraform-docs auto-generated) re-rendered to use the constraint form (`>= 1.0`) instead of the resolved version (`1.3.10`) for the `turingpi` provider — matches what CI emits.
+
+### CI / docs hygiene (no module behavior changes)
+
+- All 10 modules now covered by `validate.yml` matrix and `docs.yml` loop (was 8; `modules/talos-image` and `modules/addons/cert-manager` were missing).
+- `docs.yml` auto-commit step now has `permissions: contents: write` (was hitting 403 on push).
+- `validate.yml` defensively purges `~/.terraformrc` before each matrix entry to avoid cross-job state leakage from the sister provider repo's `cli-smoketest` workflow.
+- `terraform-docs/gh-actions` Docker action replaced with `go install terraform-docs@v0.20.0` + shell loop (Docker actions fail on the containerized self-hosted runner).
+- `aquasecurity/trivy-action` bumped 0.34.0 → 0.35.0 (older version failed with permission errors on the new runner).
+- `actions/dependency-review-action` 4.8.2 → 4.9.0 (Dependabot, PR #12).
+- Root `README.md` Addon Modules table now includes `cert-manager` and is alphabetized.
+- Root `main.tf` comment refreshed from 4 modules to 10 (grouped Cluster / Addon).
+- Self-hosted runner migration (commits `5ef13ae`, `7e89d2c`) — workflows now use `runs-on: [self-hosted, linux]`.
+
+### Compatibility
+
+No breaking changes. Module input/output signatures unchanged. The `talos-image` `required_providers` declaration is additive only.
+
 ## [1.4.0] - 2026-03-07
 
 ### Changed
