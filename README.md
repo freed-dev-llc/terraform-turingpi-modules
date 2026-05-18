@@ -21,9 +21,10 @@ Reusable Terraform modules for Turing Pi cluster provisioning and management.
 
 | Module | Description |
 |--------|-------------|
-| [metallb](./modules/addons/metallb) | MetalLB load balancer |
+| [cert-manager](./modules/addons/cert-manager) | TLS certificate management with Let's Encrypt + DNS01 (Cloudflare) |
 | [ingress-nginx](./modules/addons/ingress-nginx) | NGINX Ingress controller |
 | [longhorn](./modules/addons/longhorn) | Distributed block storage with NVMe support |
+| [metallb](./modules/addons/metallb) | MetalLB load balancer |
 | [monitoring](./modules/addons/monitoring) | Prometheus, Grafana, Alertmanager stack |
 | [portainer](./modules/addons/portainer) | Cluster management agent (CE/BE) |
 
