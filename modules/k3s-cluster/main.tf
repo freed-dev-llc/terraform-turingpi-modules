@@ -210,11 +210,23 @@ resource "null_resource" "wait_for_cluster" {
 # Kubeconfig Management
 # =============================================================================
 
+# Materialize the control-plane SSH key to a 0600 tempfile so the scp
+# in null_resource.fetch_kubeconfig can pass -i. Terraform's connection
+# block accepts PEM contents directly; scp does not, so we have to land
+# the bytes on disk first (fixes #32).
+resource "local_sensitive_file" "fetch_kubeconfig_key" {
+  count           = var.control_plane.ssh_key != null ? 1 : 0
+  content         = var.control_plane.ssh_key
+  filename        = "${path.module}/.fetch_kubeconfig_id"
+  file_permission = "0600"
+}
+
 # Fetch kubeconfig from control plane
 resource "null_resource" "fetch_kubeconfig" {
   depends_on = [
     null_resource.k3s_control_plane,
-    null_resource.wait_for_cluster
+    null_resource.wait_for_cluster,
+    local_sensitive_file.fetch_kubeconfig_key,
   ]
 
   triggers = {
@@ -239,14 +251,21 @@ resource "null_resource" "fetch_kubeconfig" {
     ]
   }
 
-  # Fetch kubeconfig to local
+  # Fetch kubeconfig to local. IdentitiesOnly=yes prevents an agent-loaded
+  # key from being tried instead of the one we explicitly pass.
   provisioner "local-exec" {
     command = <<-EOT
       scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+        ${var.control_plane.ssh_key != null ? "-i ${path.module}/.fetch_kubeconfig_id -o IdentitiesOnly=yes" : ""} \
         -P ${var.control_plane.ssh_port} \
         ${var.control_plane.ssh_user}@${var.control_plane.host}:/tmp/kubeconfig-external.yaml \
         ${path.module}/.kubeconfig.tmp
     EOT
+  }
+
+  # Wipe the on-disk key copy as soon as scp finishes.
+  provisioner "local-exec" {
+    command = "rm -f ${path.module}/.fetch_kubeconfig_id"
   }
 }
 

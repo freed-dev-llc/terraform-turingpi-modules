@@ -14,6 +14,10 @@ CODEX.md
 *.tfstate
 *.tfstate.backup
 *.tfplan
+
+# k3s-cluster runtime artifacts (kubeconfig fetch + transient ssh key)
+modules/k3s-cluster/.kubeconfig.tmp
+modules/k3s-cluster/.fetch_kubeconfig_id
 *.auto.tfvars
 terraform.tfvars
 override.tf
