@@ -17,6 +17,7 @@ This document describes the complete lifecycle workflows for Talos and K3s clust
 ### Talos Lifecycle Flowchart
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 flowchart TD
     subgraph Phase1["Phase 1: Image Preparation"]
         A[Start] --> B{Custom Extensions<br/>Required?}
@@ -176,6 +177,7 @@ See [Addon Module Deployment](#addon-module-deployment) section.
 ### K3s Lifecycle Flowchart
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 flowchart TD
     subgraph Phase1["Phase 1: Image Preparation"]
         A[Start] --> B[Download Armbian image<br/>from trusted source]
@@ -475,6 +477,7 @@ See [Addon Module Deployment](#addon-module-deployment) section.
 ### Deployment Order Flowchart
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 flowchart LR
     subgraph Layer1["Layer 1: Network"]
         A[MetalLB]
@@ -595,6 +598,7 @@ module "portainer" {
 ### Destruction Flowchart
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 flowchart TD
     A[Start Destruction] --> B{Cluster Type?}
 
