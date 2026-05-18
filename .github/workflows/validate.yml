@@ -35,6 +35,14 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      # Defensive: the self-hosted runner's $HOME is persistent across jobs.
+      # Other workflows (e.g. terraform-provider-turingpi's cli-smoketest)
+      # write dev_overrides into ~/.terraformrc that reference per-run $RUNNER_TEMP
+      # paths long since gone, which then break `terraform init` here with
+      # "could not read package directory". Remove any leaked CLI config.
+      - name: Purge any leaked CLI config
+        run: rm -f ~/.terraformrc ~/.tofurc
+
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
         working-directory: ${{ matrix.module }}
