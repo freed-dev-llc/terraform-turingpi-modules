@@ -4,10 +4,18 @@
 # Use the submodules directly rather than this root module.
 #
 # Available submodules:
-#   - modules/flash-nodes        - Flash firmware to Turing Pi nodes
-#   - modules/talos-cluster      - Deploy Talos Kubernetes cluster
-#   - modules/addons/metallb     - MetalLB load balancer
-#   - modules/addons/ingress-nginx - NGINX Ingress controller
+#   Cluster modules:
+#     - modules/flash-nodes      - Flash firmware to Turing Pi nodes
+#     - modules/k3s-cluster      - Deploy K3s Kubernetes cluster (Armbian)
+#     - modules/talos-cluster    - Deploy Talos Kubernetes cluster
+#     - modules/talos-image      - Build Talos Image Factory schematic / image URLs
+#   Addon modules:
+#     - modules/addons/cert-manager  - TLS certs via Let's Encrypt + Cloudflare DNS01
+#     - modules/addons/ingress-nginx - NGINX Ingress controller
+#     - modules/addons/longhorn      - Distributed block storage with NVMe support
+#     - modules/addons/metallb       - MetalLB load balancer
+#     - modules/addons/monitoring    - Prometheus / Grafana / Alertmanager
+#     - modules/addons/portainer     - Cluster management agent (CE/BE)
 #
 # Usage:
 #   module "flash" {
