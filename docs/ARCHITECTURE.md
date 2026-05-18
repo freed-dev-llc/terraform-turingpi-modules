@@ -5,6 +5,7 @@ This document describes the architecture and module composition of the Terraform
 ## Module Dependency Diagram
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 graph TD
     subgraph "Cluster Provisioning"
         FN[flash-nodes] --> TC[talos-cluster]
@@ -37,6 +38,7 @@ graph TD
 ## Deployment Flow
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 sequenceDiagram
     participant User
     participant Terraform
@@ -74,6 +76,7 @@ sequenceDiagram
 ## Addon Composition
 
 ```mermaid
+%%{init: {'theme': 'neutral'}}%%
 graph LR
     subgraph "Layer 1: Network Foundation"
         MLB[MetalLB<br/>LoadBalancer IPs]
