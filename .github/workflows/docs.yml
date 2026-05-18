@@ -34,9 +34,11 @@ jobs:
             modules/flash-nodes \
             modules/k3s-cluster \
             modules/talos-cluster \
-            modules/addons/metallb \
+            modules/talos-image \
+            modules/addons/cert-manager \
             modules/addons/ingress-nginx \
             modules/addons/longhorn \
+            modules/addons/metallb \
             modules/addons/monitoring \
             modules/addons/portainer; do
             terraform-docs --config .terraform-docs.yml --output-file README.md --output-mode inject "$dir"
