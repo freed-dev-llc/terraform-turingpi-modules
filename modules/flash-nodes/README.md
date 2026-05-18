@@ -39,15 +39,15 @@ module "flash" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_nodes"></a> [nodes](#input\_nodes) | Map of node number to firmware configuration | <pre>map(object({<br/>    firmware = string<br/>  }))</pre> | n/a | yes |
+| <a name="input_nodes"></a> [nodes](#input\_nodes) | Map of node number → firmware configuration. Keys must be "1", "2", "3", or "4" (Turing Pi 2 has 4 node slots). | <pre>map(object({<br/>    firmware = string<br/>  }))</pre> | n/a | yes |
 | <a name="input_power_on_after_flash"></a> [power\_on\_after\_flash](#input\_power\_on\_after\_flash) | Power on nodes after flashing | `bool` | `true` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_flashed_nodes"></a> [flashed\_nodes](#output\_flashed\_nodes) | Map of nodes that were flashed |
-| <a name="output_powered_nodes"></a> [powered\_nodes](#output\_powered\_nodes) | Map of nodes that were powered on |
+| <a name="output_flashed_nodes"></a> [flashed\_nodes](#output\_flashed\_nodes) | Map of node number → firmware file path that was flashed |
+| <a name="output_powered_nodes"></a> [powered\_nodes](#output\_powered\_nodes) | Map of node number → power state for nodes that were powered on |
 <!-- END_TF_DOCS -->
 
 ## License
