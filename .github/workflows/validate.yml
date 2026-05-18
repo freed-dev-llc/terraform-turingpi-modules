@@ -8,6 +8,12 @@ on:
       - '.tflint.hcl'
       - '.github/workflows/validate.yml'
 
+# Read-only: this workflow only runs terraform fmt/validate + tflint + trivy.
+# No commits, no PR comments, no deploys. Closes CodeQL alerts #9 and #12
+# (actions/missing-workflow-permissions).
+permissions:
+  contents: read
+
 jobs:
   validate:
     name: Validate
