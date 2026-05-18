@@ -49,6 +49,22 @@ resource "null_resource" "k3s_control_plane" {
     timeout     = "5m"
   }
 
+  # Set hostname BEFORE installing k3s. Fresh Armbian flashes all default
+  # to "turing-rk1", which collides with k3s's hostname-based node identity
+  # and causes worker joins to fail with "Node password rejected, duplicate
+  # hostname" (fixes #31). No-op when the optional hostname is null.
+  provisioner "remote-exec" {
+    inline = var.control_plane.hostname != null ? [
+      "#!/bin/bash",
+      "set -e",
+      "echo '=== Setting hostname to ${var.control_plane.hostname} ==='",
+      "hostnamectl set-hostname ${var.control_plane.hostname}",
+      "if grep -qE '^127\\.0\\.1\\.1[[:space:]]' /etc/hosts; then sed -i -E 's/^127\\.0\\.1\\.1[[:space:]].*/127.0.1.1 ${var.control_plane.hostname}/' /etc/hosts; else echo '127.0.1.1 ${var.control_plane.hostname}' >> /etc/hosts; fi",
+      ] : [
+      "echo 'No hostname override for control plane (current: '$(hostname)')'"
+    ]
+  }
+
   # Install packages
   provisioner "remote-exec" {
     inline = [
@@ -124,6 +140,20 @@ resource "null_resource" "k3s_workers" {
     password    = each.value.ssh_password
     port        = each.value.ssh_port
     timeout     = "5m"
+  }
+
+  # Set hostname BEFORE installing the k3s agent — see comment on the
+  # control plane equivalent (fixes #31).
+  provisioner "remote-exec" {
+    inline = each.value.hostname != null ? [
+      "#!/bin/bash",
+      "set -e",
+      "echo '=== Setting hostname to ${each.value.hostname} on worker ${each.key} ==='",
+      "hostnamectl set-hostname ${each.value.hostname}",
+      "if grep -qE '^127\\.0\\.1\\.1[[:space:]]' /etc/hosts; then sed -i -E 's/^127\\.0\\.1\\.1[[:space:]].*/127.0.1.1 ${each.value.hostname}/' /etc/hosts; else echo '127.0.1.1 ${each.value.hostname}' >> /etc/hosts; fi",
+      ] : [
+      "echo 'No hostname override for worker ${each.key} (current: '$(hostname)')'"
+    ]
   }
 
   # Install packages
