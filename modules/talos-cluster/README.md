@@ -77,8 +77,8 @@ module "cluster" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_local"></a> [local](#provider\_local) | 2.6.1 |
-| <a name="provider_talos"></a> [talos](#provider\_talos) | 0.10.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | >= 2.0 |
+| <a name="provider_talos"></a> [talos](#provider\_talos) | >= 0.7 |
 
 ## Inputs
 

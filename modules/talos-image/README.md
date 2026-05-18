@@ -67,12 +67,13 @@ module "talos_image" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | >= 3.0 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_local"></a> [local](#provider\_local) | n/a |
+| <a name="provider_local"></a> [local](#provider\_local) | >= 2.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 
 ## Inputs
@@ -86,6 +87,8 @@ module "talos_image" {
 | <a name="input_image_factory_url"></a> [image\_factory\_url](#input\_image\_factory\_url) | Talos Image Factory base URL | `string` | `"https://factory.talos.dev"` | no |
 | <a name="input_platform"></a> [platform](#input\_platform) | Target platform (metal, aws, gcp, azure, etc.) | `string` | `"metal"` | no |
 | <a name="input_preset"></a> [preset](#input\_preset) | Preset extension bundle: 'longhorn' (iscsi-tools, util-linux-tools), 'longhorn-nfs' (adds nfs-utils), 'qemu' (qemu-guest-agent), or 'none' | `string` | `"none"` | no |
+| <a name="input_sbc_overlay"></a> [sbc\_overlay](#input\_sbc\_overlay) | SBC overlay name for single-board computers (e.g., 'turingrk1', 'rpi\_generic', 'rock5b'). Required for SBC hardware support. | `string` | `null` | no |
+| <a name="input_sbc_overlay_image"></a> [sbc\_overlay\_image](#input\_sbc\_overlay\_image) | SBC overlay image name (e.g., 'siderolabs/sbc-rockchip'). If not specified, auto-detected from overlay name. | `string` | `null` | no |
 
 ## Outputs
 
@@ -97,6 +100,8 @@ module "talos_image" {
 | <a name="output_image_url"></a> [image\_url](#output\_image\_url) | URL to download the Talos image (raw format) |
 | <a name="output_image_url_iso"></a> [image\_url\_iso](#output\_image\_url\_iso) | URL to download the Talos ISO image |
 | <a name="output_installer_url"></a> [installer\_url](#output\_installer\_url) | Talos installer image URL for upgrades |
+| <a name="output_sbc_overlay"></a> [sbc\_overlay](#output\_sbc\_overlay) | SBC overlay name (if configured) |
+| <a name="output_sbc_overlay_image"></a> [sbc\_overlay\_image](#output\_sbc\_overlay\_image) | SBC overlay image (if configured) |
 | <a name="output_schematic_id"></a> [schematic\_id](#output\_schematic\_id) | Talos Image Factory schematic ID |
 | <a name="output_schematic_yaml"></a> [schematic\_yaml](#output\_schematic\_yaml) | Schematic YAML sent to Image Factory |
 <!-- END_TF_DOCS -->

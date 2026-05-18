@@ -38,7 +38,7 @@ Then connect from your Portainer instance using the agent URL.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | 1.19.0 |
+| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | >= 1.14 |
 
 ## Inputs
 
