@@ -118,8 +118,8 @@ module "monitoring" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_helm"></a> [helm](#provider\_helm) | 3.1.1 |
-| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | 1.19.0 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | >= 2.0 |
+| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | >= 1.14 |
 
 ## Inputs
 
