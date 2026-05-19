@@ -177,8 +177,11 @@ EOF
 
 # Response: {"id":"613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245"}
 
-# Download the image for ARM64 (Turing RK1)
-curl -LO "https://factory.talos.dev/image/613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245/v1.12.1/metal-arm64.raw.xz"
+# Download the image for ARM64 (Turing RK1).
+# Pick the Talos version you intend to deploy — v1.9.2 is the verified-working
+# baseline for this module (see CHANGELOG); the schematic ID is independent
+# of the version, so you can swap in newer Talos releases without rebuilding.
+curl -LO "https://factory.talos.dev/image/613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245/v1.9.2/metal-arm64.raw.xz"
 ```
 
 ### Pre-built Schematic IDs
