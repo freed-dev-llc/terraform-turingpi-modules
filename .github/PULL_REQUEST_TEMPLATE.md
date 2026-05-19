@@ -15,12 +15,14 @@ Brief description of the changes.
 
 - [ ] flash-nodes
 - [ ] talos-cluster
+- [ ] talos-image
 - [ ] k3s-cluster
-- [ ] metallb
-- [ ] ingress-nginx
-- [ ] longhorn
-- [ ] monitoring
-- [ ] portainer
+- [ ] addons/cert-manager
+- [ ] addons/metallb
+- [ ] addons/ingress-nginx
+- [ ] addons/longhorn
+- [ ] addons/monitoring
+- [ ] addons/portainer
 
 ## Checklist
 

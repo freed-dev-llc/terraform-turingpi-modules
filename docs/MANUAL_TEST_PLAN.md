@@ -10,7 +10,7 @@ This document provides step-by-step instructions for testing the terraform-turin
 - `talosctl` installed (for Talos deployments)
 - SSH key configured (for K3s deployments)
 - Firmware images available:
-  - Talos: `talos-rk1-v1.9.1.raw.xz` (or latest)
+  - Talos: `talos-rk1-v1.9.2.raw.xz` (or latest)
   - Armbian: `armbian-rk1.img` (for K3s)
 
 ## Environment Variables
@@ -47,7 +47,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "freed-dev-llc/turingpi"
-      version = ">= 1.3.0"
+      version = ">= 1.5.0"
     }
   }
 }
@@ -112,7 +112,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "freed-dev-llc/turingpi"
-      version = ">= 1.3.0"
+      version = ">= 1.5.0"
     }
   }
 }
@@ -120,7 +120,7 @@ terraform {
 provider "turingpi" {}
 
 variable "talos_firmware" {
-  default = "/path/to/talos-rk1-v1.9.1.raw.xz"
+  default = "/path/to/talos-rk1-v1.9.2.raw.xz"
 }
 
 resource "turingpi_flash" "nodes" {
@@ -245,7 +245,7 @@ terraform {
   required_providers {
     turingpi = {
       source  = "freed-dev-llc/turingpi"
-      version = ">= 1.3.0"
+      version = ">= 1.5.0"
     }
   }
 }
@@ -779,4 +779,4 @@ kubectl get l2advertisement -n metallb-system -o yaml
 **Tester**: _______________
 **Date**: _______________
 **Cluster Type**: ⬜ Talos / ⬜ K3s
-**Module Version**: v1.2.2
+**Module Version**: v1.4.1
