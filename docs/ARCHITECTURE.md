@@ -7,23 +7,33 @@ This document describes the architecture and module composition of the Terraform
 ```mermaid
 %%{init: {'theme': 'neutral'}}%%
 graph TD
+    subgraph "Image Build"
+        TI[talos-image]
+    end
+
     subgraph "Cluster Provisioning"
-        FN[flash-nodes] --> TC[talos-cluster]
+        TI --> FN[flash-nodes]
+        FN --> TC[talos-cluster]
         FN --> KC[k3s-cluster]
     end
 
     subgraph "Kubernetes Addons"
-        TC --> MLB[metallb]
+        TC --> MLB[addons/metallb]
         KC --> MLB
-        MLB --> ING[ingress-nginx]
-        TC --> LH[longhorn]
+        TC --> CM[addons/cert-manager]
+        KC --> CM
+        MLB --> ING[addons/ingress-nginx]
+        CM --> ING
+        TC --> LH[addons/longhorn]
         KC --> LH
-        LH --> MON[monitoring]
+        LH --> MON[addons/monitoring]
         MLB --> MON
-        MLB --> PORT[portainer]
+        MLB --> PORT[addons/portainer]
     end
 
     subgraph "External Dependencies"
+        HTTP[http provider] -.-> TI
+        LOCAL[local provider] -.-> TI
         TP[turingpi provider] -.-> FN
         TALOS[talos provider] -.-> TC
         HELM[helm provider] -.-> MLB
@@ -31,6 +41,8 @@ graph TD
         HELM -.-> LH
         HELM -.-> MON
         HELM -.-> PORT
+        HELM -.-> CM
+        KCTL[kubectl provider] -.-> CM
         K8S[kubernetes provider] -.-> MLB
     end
 ```

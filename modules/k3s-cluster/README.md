@@ -14,7 +14,7 @@ This module connects to nodes via SSH, prepares them (packages, NVMe storage), a
 ```hcl
 module "k3s" {
   source  = "freed-dev-llc/modules/turingpi//modules/k3s-cluster"
-  version = ">= 1.3.0"
+  version = ">= 1.4.0"
 
   cluster_name = "my-cluster"
 
@@ -51,7 +51,7 @@ module "k3s" {
 ```hcl
 module "k3s" {
   source  = "freed-dev-llc/modules/turingpi//modules/k3s-cluster"
-  version = ">= 1.3.0"
+  version = ">= 1.4.0"
 
   cluster_name = "my-cluster"
 
@@ -83,7 +83,7 @@ variable "ssh_password" {
 ```hcl
 module "k3s" {
   source  = "freed-dev-llc/modules/turingpi//modules/k3s-cluster"
-  version = ">= 1.3.0"
+  version = ">= 1.4.0"
 
   cluster_name = "homelab"
   k3s_version  = "v1.31.4+k3s1"

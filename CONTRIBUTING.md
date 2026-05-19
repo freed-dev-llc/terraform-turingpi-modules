@@ -102,7 +102,7 @@ All PRs must pass:
 
 - Terraform validation for all 10 modules
 - Security scan (Trivy)
-- Code owner review (@freed-dev-llc)
+- Code owner review (@jfreed-dev)
 
 ## Module Structure
 

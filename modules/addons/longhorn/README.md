@@ -10,7 +10,7 @@ Terraform module to deploy [Longhorn](https://longhorn.io/) distributed block st
 ```hcl
 module "longhorn" {
   source  = "freed-dev-llc/modules/turingpi//modules/addons/longhorn"
-  version = ">= 1.3.0"
+  version = ">= 1.4.0"
 
   # Basic configuration
   default_replica_count = 2

@@ -78,7 +78,7 @@ module "monitoring" {
 ```hcl
 module "monitoring" {
   source  = "freed-dev-llc/modules/turingpi//modules/addons/monitoring"
-  version = ">= 1.3.0"
+  version = ">= 1.4.0"
 
   # Change default password!
   grafana_admin_password = "your-secure-password"

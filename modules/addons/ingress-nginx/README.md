@@ -16,7 +16,7 @@ provider "helm" {
 
 module "ingress" {
   source  = "freed-dev-llc/ingress-nginx/kubernetes"
-  version = ">= 1.3.0"
+  version = ">= 1.4.0"
 
   loadbalancer_ip = "192.168.1.200"  # Optional: use with MetalLB
 }
@@ -79,14 +79,16 @@ When using with the MetalLB module, specify a `loadbalancer_ip` from your MetalL
 
 ```hcl
 module "metallb" {
-  source   = "freed-dev-llc/metallb/kubernetes"
-  ip_range = "192.168.1.200-192.168.1.220"
+  source   = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
+  version  = ">= 1.4.0"
+  ip_range = "10.10.88.80-10.10.88.89"
 }
 
 module "ingress" {
-  source          = "freed-dev-llc/ingress-nginx/kubernetes"
+  source          = "freed-dev-llc/modules/turingpi//modules/addons/ingress-nginx"
+  version         = ">= 1.4.0"
   depends_on      = [module.metallb]
-  loadbalancer_ip = "192.168.1.200"
+  loadbalancer_ip = "10.10.88.80"
 }
 ```
 

@@ -19,8 +19,8 @@ provider "kubectl" {
 }
 
 module "metallb" {
-  source  = "freed-dev-llc/metallb/kubernetes"
-  version = ">= 1.3.0"
+  source  = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
+  version = ">= 1.4.0"
 
   ip_range = "192.168.1.200-192.168.1.220"
 }
