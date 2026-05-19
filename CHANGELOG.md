@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Version pins refreshed across docs**: `README.md` Quick Start examples bumped from `~> 1.3.9` to `~> 1.4`; the requirements line for the sister provider bumped to `~> 1.5`. `docs/MANUAL_TEST_PLAN.md` provider examples bumped from `>= 1.3.0` to `>= 1.5.0`. `docs/UPGRADE.md` `?ref=v1.3.5` references throughout the file bumped to `?ref=v1.4.1`. `modules/talos-cluster/README.md` schematic-download example bumped to Talos v1.9.2 to match the verified baseline (#42, #43).
+- **Module count coverage**: `CONTRIBUTING.md` ("all 8 modules" → "all 10 modules"), `.github/PULL_REQUEST_TEMPLATE.md` (added `talos-image` and `cert-manager`, re-prefixed addons as `addons/<name>`), and `docs/ARCHITECTURE.md` (added `talos-image` and `addons/cert-manager` to the Module Structure tree + Provider Dependencies table) — all out of sync since v1.4.1's CI matrix expansion (#42).
+- **`docs/UPGRADE.md`**: added v1.4.0 and v1.4.1 sections at the top of "Breaking Changes" (which previously stopped at v1.3.5); one-line "v1.3.6 – v1.3.10" rollup for the incremental polish releases (#42).
+
+### Documentation
+
+- README.md "Verified Configurations" header bumped from v1.3.9 to v1.4.1 (modules) / v1.5.0 (provider).
+- `docs/MANUAL_TEST_PLAN.md`: Talos image example bumped from v1.9.1 to v1.9.2 (verified per CHANGELOG); "Module Version" footer bumped from v1.2.2 to v1.4.1.
+- `docs/WORKFLOWS.md`: Version History table extended past 2026-01-19 with the self-hosted runner migration (v1.4.1) and the mermaid neutral-theme convention (#41) (#43).
+- CHANGELOG footer: added `[1.4.1]` compare-link entry; `[Unreleased]` advanced from `v1.4.0...HEAD` to `v1.4.1...HEAD` (#42).
+
 ## [1.4.1] - 2026-05-17
 
 ### Changed
