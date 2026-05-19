@@ -16,7 +16,8 @@ Deploys [cert-manager](https://cert-manager.io/) for automatic TLS certificate m
 
 ```hcl
 module "cert_manager" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/cert-manager?ref=v1.4.1"
+  source  = "freed-dev-llc/modules/turingpi//modules/addons/cert-manager"
+  version = ">= 1.4.0"
 }
 ```
 
@@ -24,7 +25,8 @@ module "cert_manager" {
 
 ```hcl
 module "cert_manager" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/cert-manager?ref=v1.4.1"
+  source  = "freed-dev-llc/modules/turingpi//modules/addons/cert-manager"
+  version = ">= 1.4.0"
 
   create_letsencrypt_issuer = true
   letsencrypt_email         = "admin@example.com"
@@ -36,7 +38,8 @@ module "cert_manager" {
 
 ```hcl
 module "cert_manager" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/cert-manager?ref=v1.4.1"
+  source  = "freed-dev-llc/modules/turingpi//modules/addons/cert-manager"
+  version = ">= 1.4.0"
 
   create_letsencrypt_issuer = true
   letsencrypt_email         = "admin@example.com"
