@@ -286,7 +286,7 @@ Revert to previous module version:
 
 ```hcl
 module "k3s_cluster" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.3"  # Previous version
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.4.0"  # Previous version
 }
 ```
 

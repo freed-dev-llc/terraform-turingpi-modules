@@ -11,6 +11,7 @@ Terraform module to generate custom Talos Linux images with system extensions us
 ```hcl
 module "talos_image" {
   source = "freed-dev-llc/modules/turingpi//modules/talos-image"
+  version       = ">= 1.4.0"
 
   talos_version = "v1.9.2"
   architecture  = "arm64"
@@ -31,6 +32,7 @@ output "image_url" {
 ```hcl
 module "talos_image" {
   source = "freed-dev-llc/modules/turingpi//modules/talos-image"
+  version       = ">= 1.4.0"
 
   talos_version = "v1.9.2"
   architecture  = "arm64"
@@ -49,6 +51,7 @@ module "talos_image" {
 ```hcl
 module "talos_image" {
   source = "freed-dev-llc/modules/turingpi//modules/talos-image"
+  version       = ">= 1.4.0"
 
   talos_version = "v1.9.2"
   preset        = "longhorn"
@@ -125,6 +128,7 @@ For common configurations, the module uses cached schematic IDs to avoid API cal
 # Step 1: Get the image URL
 module "talos_image" {
   source        = "freed-dev-llc/modules/turingpi//modules/talos-image"
+  version       = ">= 1.4.0"
   talos_version = "v1.9.2"
   preset        = "longhorn"
 }
