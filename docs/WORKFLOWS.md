@@ -807,3 +807,5 @@ kubectl get svc -n portainer
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0 | 2026-01-19 | Initial workflow documentation |
+| 1.1 | 2026-05-17 | Self-hosted runner migration; `validate.yml` matrix + `docs.yml` loop now cover all 10 modules (v1.4.1) |
+| 1.2 | 2026-05-18 | Mermaid diagrams locked to `neutral` theme for cross-mode legibility (PR #41) |
