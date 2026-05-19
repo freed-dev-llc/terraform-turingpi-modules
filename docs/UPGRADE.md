@@ -18,13 +18,13 @@ When upgrading to a new module version, update the `ref` tag in your module sour
 ```hcl
 # Before
 module "k3s_cluster" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.3"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.4.0"
   # ...
 }
 
 # After
 module "k3s_cluster" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.4.1"
   # ...
 }
 ```
@@ -51,7 +51,7 @@ The k3s-cluster module supports automatic version upgrades via the `k3s_version`
 
 ```hcl
 module "k3s_cluster" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/k3s-cluster?ref=v1.4.1"
 
   k3s_version = "v1.31.4+k3s1"  # Update to new version
   # ...
@@ -90,7 +90,7 @@ curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.31.4+k3s1 K3S_URL=https://
 
 ```hcl
 module "metallb" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/metallb?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/metallb?ref=v1.4.1"
 
   chart_version = "0.14.9"  # Update chart version
   ip_range      = "10.10.88.80-10.10.88.89"
@@ -107,7 +107,7 @@ module "metallb" {
 
 ```hcl
 module "ingress_nginx" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/ingress-nginx?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/ingress-nginx?ref=v1.4.1"
 
   chart_version = "4.11.3"  # Update chart version
 }
@@ -123,7 +123,7 @@ module "ingress_nginx" {
 
 ```hcl
 module "longhorn" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/longhorn?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/longhorn?ref=v1.4.1"
 
   chart_version = "1.7.2"  # Update chart version
 }
@@ -140,7 +140,7 @@ module "longhorn" {
 
 ```hcl
 module "monitoring" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/monitoring?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/monitoring?ref=v1.4.1"
 
   chart_version          = "65.8.1"  # Update chart version
   grafana_admin_password = var.grafana_password
@@ -157,7 +157,7 @@ module "monitoring" {
 
 ```hcl
 module "cert_manager" {
-  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/cert-manager?ref=v1.3.5"
+  source = "github.com/freed-dev-llc/terraform-turingpi-modules//modules/addons/cert-manager?ref=v1.4.1"
 
   chart_version = "1.16.2"  # Update chart version
 }
@@ -170,6 +170,25 @@ module "cert_manager" {
 - Test ACME challenges after upgrade
 
 ## Breaking Changes
+
+### v1.4.1
+
+**Changes (no breaks):**
+
+- `modules/talos-image` now explicitly declares `hashicorp/local` in `required_providers`. Most users won't notice — Terraform/OpenTofu auto-resolves `hashicorp/local` from the registry.
+- Module READMEs (terraform-docs auto-generated) re-rendered to use `>= 1.0` constraint form for the `turingpi` provider instead of the resolved version.
+- CI-only: validation matrix and docs.yml loop now cover all 10 modules (previously missed `modules/talos-image` and `modules/addons/cert-manager`).
+
+### v1.4.0
+
+**Changes:**
+
+- Migrated org namespace `jfreed-dev` → `freed-dev-llc`. The Terraform Registry source path is `freed-dev-llc/modules/turingpi` (and `//modules/<name>` for sub-paths). The GitHub source path is `github.com/freed-dev-llc/terraform-turingpi-modules`. Both old paths still redirect, but pin against the canonical owner in new code.
+- Fixed TFLint unused-declaration warning for longhorn `talos_extensions_installed` variable.
+
+### v1.3.6 – v1.3.10
+
+Incremental polish (CI hardening, doc tweaks, dependency bumps). No module input/output signature changes. Safe to skip directly to v1.4.1.
 
 ### v1.3.5
 

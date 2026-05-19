@@ -115,8 +115,10 @@ terraform-turingpi-modules/
 ├── modules/
 │   ├── flash-nodes/        # Firmware flashing via BMC API
 │   ├── talos-cluster/      # Talos Linux Kubernetes
+│   ├── talos-image/        # Talos Image Factory client (build/cache schematics)
 │   ├── k3s-cluster/        # K3s on Armbian
 │   └── addons/
+│       ├── cert-manager/   # TLS certificate management
 │       ├── metallb/        # Layer 2/BGP load balancer
 │       ├── ingress-nginx/  # Ingress controller
 │       ├── longhorn/       # Distributed block storage
@@ -125,8 +127,8 @@ terraform-turingpi-modules/
 ├── examples/
 │   ├── talos-full-stack/   # Complete Talos deployment
 │   └── k3s-full-stack/     # Complete K3s deployment
-└── test/
-    └── provider-test/      # Provider data source tests
+└── test/                   # addon-test, cluster-install, k3s-test,
+                            # provider-test, talos-cluster-test, talos-test
 ```
 
 ## Provider Dependencies
@@ -135,7 +137,9 @@ terraform-turingpi-modules/
 |--------|-------------------|
 | flash-nodes | `freed-dev-llc/turingpi` |
 | talos-cluster | `siderolabs/talos`, `hashicorp/kubernetes` |
+| talos-image | `hashicorp/http`, `hashicorp/local` |
 | k3s-cluster | `hashicorp/null` (SSH provisioner) |
+| cert-manager | `hashicorp/helm`, `gavinbunney/kubectl` |
 | metallb | `hashicorp/helm`, `hashicorp/kubernetes` |
 | ingress-nginx | `hashicorp/helm` |
 | longhorn | `hashicorp/helm` |

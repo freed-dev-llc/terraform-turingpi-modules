@@ -302,7 +302,8 @@ No breaking changes. Module input/output signatures unchanged. The `talos-image`
 - **metallb addon** - MetalLB load balancer
 - **ingress-nginx addon** - NGINX Ingress controller
 
-[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.3.10...v1.4.0
 [1.3.10]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.3.9...v1.3.10
 [1.3.9]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.3.8...v1.3.9

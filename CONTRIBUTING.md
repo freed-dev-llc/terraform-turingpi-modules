@@ -100,7 +100,7 @@ terraform-docs --config .terraform-docs.yml modules/talos-cluster
 
 All PRs must pass:
 
-- Terraform validation for all 8 modules
+- Terraform validation for all 10 modules
 - Security scan (Trivy)
 - Code owner review (@freed-dev-llc)
 
