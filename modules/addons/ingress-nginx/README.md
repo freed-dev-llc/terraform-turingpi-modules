@@ -15,7 +15,7 @@ provider "helm" {
 }
 
 module "ingress" {
-  source  = "freed-dev-llc/ingress-nginx/kubernetes"
+  source  = "freed-dev-llc/modules/turingpi//modules/addons/ingress-nginx"
   version = ">= 1.4.0"
 
   loadbalancer_ip = "192.168.1.200"  # Optional: use with MetalLB
