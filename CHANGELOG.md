@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`modules/addons/ingress-nginx`**: corrected the module source in the README Usage example from the non-existent `freed-dev-llc/ingress-nginx/kubernetes` to the canonical `freed-dev-llc/modules/turingpi//modules/addons/ingress-nginx` (matches the other addon READMEs and the module's own Registry badge). The old value failed `terraform init` for anyone who copy-pasted it. The line sits above the `BEGIN_TF_DOCS` marker, so terraform-docs never regenerated it. Docs only — no behavior change (#48).
+
 ## [1.4.2] - 2026-05-22
 
 ### Changed
