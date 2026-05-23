@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.2] - 2026-05-22
+
 ### Changed
 
 - **Version pins refreshed across docs**: `README.md` Quick Start examples bumped from `~> 1.3.9` to `~> 1.4`; the requirements line for the sister provider bumped to `~> 1.5`. `docs/MANUAL_TEST_PLAN.md` provider examples bumped from `>= 1.3.0` to `>= 1.5.0`. `docs/UPGRADE.md` `?ref=v1.3.5` references throughout the file bumped to `?ref=v1.4.1` (plus the rollback example to `v1.4.0`). `modules/talos-cluster/README.md` schematic-download example bumped to Talos v1.9.2 to match the verified baseline. Submodule Usage examples standardized at `version = ">= 1.4.0"` (`cert-manager` switched from git-source `?ref=` form to Registry shortform; `talos-image` got an explicit version pin) (#42, #43, #46, #47).
@@ -316,7 +318,8 @@ No breaking changes. Module input/output signatures unchanged. The `talos-image`
 - **metallb addon** - MetalLB load balancer
 - **ingress-nginx addon** - NGINX Ingress controller
 
-[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.2...HEAD
+[1.4.2]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.3.10...v1.4.0
 [1.3.10]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.3.9...v1.3.10
