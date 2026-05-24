@@ -16,11 +16,24 @@ terraform {
   required_providers {
     turingpi = {
       source  = "freed-dev-llc/turingpi"
-      version = ">= 1.0"
+      version = ">= 1.5.0"
     }
     time = {
       source  = "hashicorp/time"
       version = ">= 0.9"
+    }
+    # Required by the addon modules below. kubectl must use the gavinbunney
+    # source — without this entry the root infers hashicorp/kubectl and
+    # init fails ("does not have a provider named hashicorp/kubectl").
+    helm = {
+      source = "hashicorp/helm"
+      # Pinned to 2.x: the provider "helm" block below uses the v2 nested
+      # `kubernetes {}` block, which helm v3 replaced with an attribute.
+      version = "~> 2.0"
+    }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.14"
     }
   }
 }
@@ -98,8 +111,6 @@ module "cluster" {
 
   kubeconfig_path  = "${path.module}/kubeconfig"
   talosconfig_path = "${path.module}/talosconfig"
-
-  allow_scheduling_on_control_plane = true
 }
 
 # =============================================================================

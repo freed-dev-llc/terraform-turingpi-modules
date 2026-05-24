@@ -12,6 +12,22 @@
 
 terraform {
   required_version = ">= 1.0"
+
+  required_providers {
+    # Required by the addon modules below. kubectl must use the gavinbunney
+    # source — without this entry the root infers hashicorp/kubectl and
+    # init fails ("does not have a provider named hashicorp/kubectl").
+    helm = {
+      source = "hashicorp/helm"
+      # Pinned to 2.x: the provider "helm" block below uses the v2 nested
+      # `kubernetes {}` block, which helm v3 replaced with an attribute.
+      version = "~> 2.0"
+    }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.14"
+    }
+  }
 }
 
 # =============================================================================
