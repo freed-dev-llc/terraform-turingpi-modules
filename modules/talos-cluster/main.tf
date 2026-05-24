@@ -61,6 +61,14 @@ resource "talos_machine_configuration_apply" "controlplane" {
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.controlplane.machine_configuration
   node                        = each.value.host
+
+  # Per-node hostname: the role config above is shared across nodes, so set
+  # machine.network.hostname here via a per-node patch. Without this the
+  # optional `hostname` input was ignored and nodes got Talos auto-generated
+  # names (fixes #56). No-op when hostname is null.
+  config_patches = each.value.hostname != null ? [
+    yamlencode({ machine = { network = { hostname = each.value.hostname } } })
+  ] : []
 }
 
 # Apply configuration to worker nodes
@@ -70,6 +78,11 @@ resource "talos_machine_configuration_apply" "worker" {
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.worker[0].machine_configuration
   node                        = each.value.host
+
+  # Per-node hostname (see control plane equivalent) — fixes #56.
+  config_patches = each.value.hostname != null ? [
+    yamlencode({ machine = { network = { hostname = each.value.hostname } } })
+  ] : []
 }
 
 # Bootstrap the cluster (first control plane only)
