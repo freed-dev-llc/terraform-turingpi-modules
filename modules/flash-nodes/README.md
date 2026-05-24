@@ -34,13 +34,13 @@ module "flash" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_turingpi"></a> [turingpi](#requirement\_turingpi) | >= 1.0 |
+| <a name="requirement_turingpi"></a> [turingpi](#requirement\_turingpi) | >= 1.5.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.0 |
+| <a name="provider_turingpi"></a> [turingpi](#provider\_turingpi) | >= 1.5.0 |
 
 ## Inputs
 
@@ -53,7 +53,7 @@ module "flash" {
 
 | Name | Description |
 |------|-------------|
-| <a name="output_flashed_nodes"></a> [flashed\_nodes](#output\_flashed\_nodes) | Map of node number → firmware file path that was flashed |
+| <a name="output_flashed_nodes"></a> [flashed\_nodes](#output\_flashed\_nodes) | Map of node number → firmware source that was flashed (URL or local file path) |
 | <a name="output_powered_nodes"></a> [powered\_nodes](#output\_powered\_nodes) | Map of node number → power state for nodes that were powered on |
 <!-- END_TF_DOCS -->
 
