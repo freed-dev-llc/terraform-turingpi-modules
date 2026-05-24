@@ -190,16 +190,26 @@ resource "null_resource" "k3s_control_plane" {
   }
 
   # Ensure a single default StorageClass: when local_path_default is false (and
-  # local-storage isn't disabled outright), strip the default-class annotation
-  # from K3s's built-in local-path so a separately-installed default (e.g.
-  # Longhorn) becomes the sole default. Avoids the "two default StorageClasses"
-  # ambiguity (#51). Idempotent via --overwrite; no-op if local-path is absent.
+  # local-storage isn't disabled outright), make K3s's built-in local-path
+  # non-default so a separately-installed default (e.g. Longhorn) is the sole
+  # default — avoiding the "two default StorageClasses" ambiguity (#51).
+  #
+  # A bare `kubectl annotate` is NOT durable: K3s re-applies its bundled
+  # local-storage manifest (which hardcodes is-default-class=true) on every
+  # restart, reverting it. So we first drop a `.skip` beside the bundled
+  # manifest — K3s then stops re-applying it, and per the K3s docs `.skip` does
+  # NOT remove the already-created resources, so the local-path provisioner + SC
+  # keep working — then clear the default annotation, which now sticks across
+  # restarts. We wait for the SC first so we only skip after it exists.
+  # Trade-off: local-path is no longer managed by K3s (won't auto-upgrade).
+  # Idempotent: touch + annotate --overwrite are no-ops on re-run.
   provisioner "remote-exec" {
     inline = (!var.local_path_default && !var.disable_local_storage) ? [
       "#!/bin/bash",
       "set -e",
-      "echo '=== Unsetting local-path as default StorageClass (#51) ==='",
+      "echo '=== Making local-path non-default durably (#51) ==='",
       "for i in $(seq 1 30); do kubectl get sc local-path >/dev/null 2>&1 && break; echo \"waiting for local-path SC ($i/30)\"; sleep 2; done",
+      "touch /var/lib/rancher/k3s/server/manifests/local-storage.yaml.skip",
       "kubectl annotate sc local-path storageclass.kubernetes.io/is-default-class=false --overwrite || echo 'local-path SC not present; nothing to unset'",
       ] : [
       "echo 'local-path remains default StorageClass (local_path_default=${var.local_path_default})'"
