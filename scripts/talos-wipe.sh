@@ -26,8 +26,9 @@
 #   TURINGPI_PASSWORD   - BMC password (alternative to -p flag)
 #
 # Credential Files (checked if env vars not set):
-#   ~/.secrets/turingpi-bmc-user     - BMC username
-#   ~/.secrets/turingpi-bmc-password - BMC password
+#   ~/.secrets/turing-pi-cluster-bmc - combined BMC creds (ip:/username:/password: lines), checked first
+#   ~/.secrets/turingpi-bmc-user     - BMC username (fallback)
+#   ~/.secrets/turingpi-bmc-password - BMC password (fallback)
 
 set -euo pipefail
 
@@ -80,16 +81,16 @@ load_credentials() {
         BMC_IP=$(echo "$BMC_IP" | sed 's|https\?://||' | sed 's|/.*||')
     fi
 
-    # Try turning-pi-cluster-bmc format first (contains ip, username, password)
-    if [[ -f "$secrets_dir/turning-pi-cluster-bmc" ]]; then
+    # Try turing-pi-cluster-bmc format first (contains ip, username, password)
+    if [[ -f "$secrets_dir/turing-pi-cluster-bmc" ]]; then
         if [[ -z "$BMC_USER" ]]; then
-            BMC_USER=$(grep "^username:" "$secrets_dir/turning-pi-cluster-bmc" | cut -d' ' -f2) || true
+            BMC_USER=$(grep "^username:" "$secrets_dir/turing-pi-cluster-bmc" | cut -d' ' -f2) || true
         fi
         if [[ -z "$BMC_PASSWORD" ]]; then
-            BMC_PASSWORD=$(grep "^password:" "$secrets_dir/turning-pi-cluster-bmc" | cut -d' ' -f2) || true
+            BMC_PASSWORD=$(grep "^password:" "$secrets_dir/turing-pi-cluster-bmc" | cut -d' ' -f2) || true
         fi
         if [[ -z "$BMC_IP" ]]; then
-            BMC_IP=$(grep "^ip:" "$secrets_dir/turning-pi-cluster-bmc" | cut -d' ' -f2) || true
+            BMC_IP=$(grep "^ip:" "$secrets_dir/turing-pi-cluster-bmc" | cut -d' ' -f2) || true
         fi
     fi
 

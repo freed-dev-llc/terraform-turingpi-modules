@@ -30,16 +30,16 @@ TALOSCONFIG="./talosconfig"
 load_credentials() {
     local secrets_dir="$HOME/.secrets"
 
-    # Try turning-pi-cluster-bmc format first (contains ip, username, password)
-    if [[ -f "$secrets_dir/turning-pi-cluster-bmc" ]]; then
+    # Try turing-pi-cluster-bmc format first (contains ip, username, password)
+    if [[ -f "$secrets_dir/turing-pi-cluster-bmc" ]]; then
         if [[ -z "$BMC_USER" ]]; then
-            BMC_USER=$(grep "^username:" "$secrets_dir/turning-pi-cluster-bmc" | cut -d' ' -f2) || true
+            BMC_USER=$(grep "^username:" "$secrets_dir/turing-pi-cluster-bmc" | cut -d' ' -f2) || true
         fi
         if [[ -z "$BMC_PASSWORD" ]]; then
-            BMC_PASSWORD=$(grep "^password:" "$secrets_dir/turning-pi-cluster-bmc" | cut -d' ' -f2) || true
+            BMC_PASSWORD=$(grep "^password:" "$secrets_dir/turing-pi-cluster-bmc" | cut -d' ' -f2) || true
         fi
         if [[ -z "$BMC_IP" ]]; then
-            BMC_IP=$(grep "^ip:" "$secrets_dir/turning-pi-cluster-bmc" | cut -d' ' -f2) || true
+            BMC_IP=$(grep "^ip:" "$secrets_dir/turing-pi-cluster-bmc" | cut -d' ' -f2) || true
         fi
     fi
 
@@ -52,8 +52,8 @@ load_credentials() {
     fi
 
     # Use SSH key from secrets if available
-    if [[ -f "$secrets_dir/turningpi-cluster" ]]; then
-        SSH_KEY="$secrets_dir/turningpi-cluster"
+    if [[ -f "$secrets_dir/turingpi-cluster" ]]; then
+        SSH_KEY="$secrets_dir/turingpi-cluster"
     elif [[ -f "$secrets_dir/turingpi-bmc" ]]; then
         SSH_KEY="$secrets_dir/turingpi-bmc"
     fi
