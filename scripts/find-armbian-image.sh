@@ -8,6 +8,7 @@
 # Options:
 #   -v, --variant VARIANT   Image variant: minimal, cli, desktop (default: minimal)
 #   -r, --release RELEASE   Debian release: trixie, bookworm (default: trixie)
+#   --kernel FLAVOR         Kernel flavor: vendor, current, edge, any (default: vendor)
 #   -l, --list              List all available images
 #   -d, --download          Download the image
 #   -o, --output DIR        Download directory (default: current dir)
@@ -27,6 +28,7 @@ set -euo pipefail
 # Default values
 VARIANT="minimal"
 RELEASE="trixie"
+KERNEL="vendor"
 LIST_MODE=false
 DOWNLOAD=false
 OUTPUT_DIR="."
@@ -45,7 +47,7 @@ REPO="armbian/community"
 API_URL="https://api.github.com/repos/${REPO}/releases"
 
 show_help() {
-    head -26 "$0" | tail -23
+    awk '/^# Usage:/{p=1} p{ if ($0 !~ /^#/) exit; sub(/^# ?/, ""); print }' "$0"
     exit 0
 }
 
@@ -54,6 +56,7 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         -v|--variant) VARIANT="$2"; shift 2 ;;
         -r|--release) RELEASE="$2"; shift 2 ;;
+        --kernel) KERNEL="$2"; shift 2 ;;
         -l|--list) LIST_MODE=true; shift ;;
         -d|--download) DOWNLOAD=true; shift ;;
         -o|--output) OUTPUT_DIR="$2"; shift 2 ;;
@@ -196,10 +199,13 @@ fi
 echo "Searching for Armbian Turing RK1 images..."
 echo ""
 
-# Fetch releases
-RELEASES=$(curl -sL "${API_URL}?per_page=10" 2>/dev/null)
-
-if [[ -z "$RELEASES" || "$RELEASES" == "null" ]]; then
+# Fetch releases to a temp file. Capturing into a shell variable and piping
+# back through `echo` mangles control characters embedded in release bodies,
+# which makes jq fail to parse the JSON ("control characters ... must be
+# escaped") and silently return no results. Reading from a file avoids that.
+RELEASES_JSON=$(mktemp)
+trap 'rm -f "$RELEASES_JSON"' EXIT
+if ! curl -sL "${API_URL}?per_page=30" -o "$RELEASES_JSON" || [[ ! -s "$RELEASES_JSON" ]]; then
     echo "Error: Failed to fetch releases from GitHub"
     exit 1
 fi
@@ -209,30 +215,36 @@ if [[ "$LIST_MODE" == "true" ]]; then
     echo "Available Turing RK1 images:"
     echo "----------------------------"
 
-    echo "$RELEASES" | jq -r '
+    jq -r '
         .[].assets[]
         | select(.name | test("Turing-rk1.*\\.img\\.xz$"))
         | "\(.name)\n  URL: \(.browser_download_url)\n  Size: \(.size / 1048576 | floor)MB\n"
-    ' 2>/dev/null || echo "No Turing RK1 images found in recent releases"
+    ' "$RELEASES_JSON" || echo "No Turing RK1 images found in recent releases"
 
     exit 0
 fi
 
-# Find matching image
-PATTERN="Turing-rk1_${RELEASE}.*${VARIANT}\\.img\\.xz$"
-IMAGE_INFO=$(echo "$RELEASES" | jq -r "
+# Find matching image. Pin the kernel flavor (vendor/current/edge) so e.g. the
+# vendor RK1 image is selected deterministically; "any" matches any flavor.
+if [[ "$KERNEL" == "any" ]]; then
+    PATTERN="Turing-rk1_${RELEASE}.*${VARIANT}\\.img\\.xz$"
+else
+    PATTERN="Turing-rk1_${RELEASE}_${KERNEL}.*${VARIANT}\\.img\\.xz$"
+fi
+IMAGE_INFO=$(jq -r --arg pat "$PATTERN" '
     [.[].assets[]
-    | select(.name | test(\"${PATTERN}\"; \"i\"))]
-    | sort_by(.created_at) | reverse | .[0]
+    | select(.name | test($pat; "i"))]
+    | sort_by(.created_at) | reverse | .[0] // empty
     | {name: .name, url: .browser_download_url, size: .size}
-" 2>/dev/null)
+' "$RELEASES_JSON")
 
 if [[ -z "$IMAGE_INFO" || "$IMAGE_INFO" == "null" ]]; then
     echo "No matching image found for:"
     echo "  Variant: $VARIANT"
     echo "  Release: $RELEASE"
+    echo "  Kernel:  $KERNEL"
     echo ""
-    echo "Try: $0 --list"
+    echo "Try: $0 --list  (or --kernel any to match any flavor)"
     exit 1
 fi
 

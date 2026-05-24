@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`scripts/find-armbian-image.sh`**: image search always returned "no image found". It captured the GitHub releases JSON into a shell variable and piped it back through `echo` to `jq`; control characters in release bodies corrupted the round-trip so `jq` failed to parse — and the error was hidden by `2>/dev/null`. Now reads the API response from a temp file (and no longer suppresses `jq` errors). Also fixed an invalid-regex-escape (the match pattern is passed via `jq --arg` instead of being interpolated into the program), added a `--kernel` flag (`vendor`/`current`/`edge`/`any`, default `vendor`) so the vendor RK1 image is selected deterministically, widened the search to `per_page=30`, and hardened the no-match path (`.[0] // empty`).
+
 ## [1.5.0] - 2026-05-24
 
 ### Changed
