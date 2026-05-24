@@ -7,14 +7,21 @@ Terraform module to flash firmware to Turing Pi 2.5 nodes.
 
 ## Usage
 
+The `firmware` value is routed by scheme: an `http(s)://` URL is flashed via the
+provider's `firmware_url` (the BMC pulls the image directly, which is the only
+path that reliably reports completion); any other value is treated as a local
+file path. URLs are recommended.
+
 ```hcl
 module "flash" {
   source  = "freed-dev-llc/modules/turingpi//modules/flash-nodes"
-  version = ">= 1.4.0"
+  version = ">= 1.5.0"
 
   nodes = {
-    1 = { firmware = "/path/to/talos-arm64.raw" }
-    2 = { firmware = "/path/to/talos-arm64.raw" }
+    # Recommended: BMC pulls directly (reliable completion signal)
+    1 = { firmware = "https://factory.talos.dev/image/<schematic>/v1.9.2/metal-arm64.raw.xz" }
+    2 = { firmware = "https://factory.talos.dev/image/<schematic>/v1.9.2/metal-arm64.raw.xz" }
+    # Local path also supported (streaming upload; less reliable completion signal)
     3 = { firmware = "/path/to/talos-arm64.raw" }
     4 = { firmware = "/path/to/talos-arm64.raw" }
   }
