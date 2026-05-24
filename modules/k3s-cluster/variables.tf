@@ -72,7 +72,7 @@ variable "disable_local_storage" {
 }
 
 variable "local_path_default" {
-  description = "Keep K3s's built-in local-path as the default StorageClass. Set false when another default (e.g. Longhorn) will be installed, to avoid two default StorageClasses (#51). Ignored when disable_local_storage = true."
+  description = "Keep K3s's built-in local-path as the default StorageClass. Set false when another default (e.g. Longhorn) will be installed, to avoid two default StorageClasses (#51); the module then marks the bundled local-storage manifest with a .skip and clears the default annotation so it survives k3s restarts (local-path stays usable but is no longer k3s-managed / auto-upgraded). Ignored when disable_local_storage = true."
   type        = bool
   default     = true
 }
