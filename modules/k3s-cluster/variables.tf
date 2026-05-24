@@ -71,6 +71,12 @@ variable "disable_local_storage" {
   default     = false
 }
 
+variable "local_path_default" {
+  description = "Keep K3s's built-in local-path as the default StorageClass. Set false when another default (e.g. Longhorn) will be installed, to avoid two default StorageClasses (#51). Ignored when disable_local_storage = true."
+  type        = bool
+  default     = true
+}
+
 variable "flannel_backend" {
   description = "Flannel backend (vxlan, host-gw, wireguard-native, none)"
   type        = string

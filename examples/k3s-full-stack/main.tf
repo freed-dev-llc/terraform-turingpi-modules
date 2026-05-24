@@ -107,6 +107,11 @@ module "k3s" {
   disable_traefik   = true
   disable_servicelb = true
 
+  # Longhorn (installed below) is the default StorageClass; drop local-path's
+  # default so there is a single default StorageClass (#51). local-path stays
+  # available for explicit use.
+  local_path_default = false
+
   kubeconfig_path = "${path.module}/kubeconfig"
 }
 

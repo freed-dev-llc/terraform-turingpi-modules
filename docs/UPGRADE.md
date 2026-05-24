@@ -171,6 +171,12 @@ module "cert_manager" {
 
 ## Breaking Changes
 
+### Unreleased
+
+**Changes (no breaks; opt-in):**
+
+- `modules/k3s-cluster` adds `local_path_default` (default `true` — no change to existing behavior). If you install another default StorageClass (e.g. Longhorn) on K3s, set `local_path_default = false` so K3s's built-in `local-path` is no longer also marked default; otherwise the cluster has **two** default StorageClasses and PVCs omitting `storageClassName` bind nondeterministically. `local-path` remains available for explicit use. Ignored when `disable_local_storage = true`.
+
 ### v1.5.0
 
 **Changes (no module interface breaks):**

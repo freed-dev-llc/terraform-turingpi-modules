@@ -107,10 +107,11 @@ resource "null_resource" "k3s_control_plane" {
   depends_on = [null_resource.bootstrap_ssh_cp]
 
   triggers = {
-    host         = var.control_plane.host
-    k3s_version  = var.k3s_version
-    server_args  = local.k3s_server_args_str
-    nvme_enabled = var.nvme_storage_enabled
+    host               = var.control_plane.host
+    k3s_version        = var.k3s_version
+    server_args        = local.k3s_server_args_str
+    nvme_enabled       = var.nvme_storage_enabled
+    local_path_default = var.local_path_default
   }
 
   connection {
@@ -185,6 +186,23 @@ resource "null_resource" "k3s_control_plane" {
       "for i in $(seq 1 60); do if kubectl get nodes 2>/dev/null | grep -q ' Ready'; then echo 'K3s server is ready!'; kubectl get nodes; exit 0; fi; echo \"Waiting... ($i/60)\"; sleep 5; done",
       "echo 'ERROR: Timeout waiting for K3s'",
       "exit 1"
+    ]
+  }
+
+  # Ensure a single default StorageClass: when local_path_default is false (and
+  # local-storage isn't disabled outright), strip the default-class annotation
+  # from K3s's built-in local-path so a separately-installed default (e.g.
+  # Longhorn) becomes the sole default. Avoids the "two default StorageClasses"
+  # ambiguity (#51). Idempotent via --overwrite; no-op if local-path is absent.
+  provisioner "remote-exec" {
+    inline = (!var.local_path_default && !var.disable_local_storage) ? [
+      "#!/bin/bash",
+      "set -e",
+      "echo '=== Unsetting local-path as default StorageClass (#51) ==='",
+      "for i in $(seq 1 30); do kubectl get sc local-path >/dev/null 2>&1 && break; echo \"waiting for local-path SC ($i/30)\"; sleep 2; done",
+      "kubectl annotate sc local-path storageclass.kubernetes.io/is-default-class=false --overwrite || echo 'local-path SC not present; nothing to unset'",
+      ] : [
+      "echo 'local-path remains default StorageClass (local_path_default=${var.local_path_default})'"
     ]
   }
 }
