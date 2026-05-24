@@ -182,8 +182,12 @@ check_power_status() {
     response=$(curl -sk -u "${BMC_USER}:${BMC_PASSWORD}" \
         "https://${BMC_IP}/api/bmc?opt=get&type=power" 2>/dev/null || echo "{}")
 
+    # The BMC returns quoted values, e.g. {"node1":"0",...}. Extract the 0/1
+    # tolerating optional quotes/whitespace; empty (no match) falls through to
+    # "unknown" below. (Previously matched only an unquoted digit, so every
+    # check returned "unknown" and power-off was never detected — see #52.)
     local power_state
-    power_state=$(echo "$response" | grep -o "\"node${slot}\":[0-1]" | cut -d':' -f2 || echo "unknown")
+    power_state=$(echo "$response" | sed -nE "s/.*\"node${slot}\"[[:space:]]*:[[:space:]]*\"?([01])\"?.*/\1/p")
 
     if [[ "$power_state" == "0" ]]; then
         echo "off"

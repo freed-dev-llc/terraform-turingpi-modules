@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`scripts/k3s-wipe.sh` & `scripts/talos-wipe.sh`**: BMC power-off verification always reported nodes as "still ON" (status `unknown`), even when they had powered off. `check_power_status` matched an *unquoted* digit (`"node1":0`), but the BMC returns *quoted* values (`"node1":"0"`), so the pattern never matched and `wait_for_power_off` always timed out — triggering spurious force-power-off warnings at the end of an otherwise-successful wipe. Now parses the value tolerating quotes/whitespace (verified live against the BMC). Fixes #52.
+
 - **`scripts/find-armbian-image.sh`**: image search always returned "no image found". It captured the GitHub releases JSON into a shell variable and piped it back through `echo` to `jq`; control characters in release bodies corrupted the round-trip so `jq` failed to parse — and the error was hidden by `2>/dev/null`. Now reads the API response from a temp file (and no longer suppresses `jq` errors). Also fixed an invalid-regex-escape (the match pattern is passed via `jq --arg` instead of being interpolated into the program), added a `--kernel` flag (`vendor`/`current`/`edge`/`any`, default `vendor`) so the vendor RK1 image is selected deterministically, widened the search to `per_page=30`, and hardened the no-match path (`.[0] // empty`).
 
 ## [1.5.0] - 2026-05-24
