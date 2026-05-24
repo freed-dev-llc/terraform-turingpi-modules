@@ -46,7 +46,7 @@ module "flash" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_nodes"></a> [nodes](#input\_nodes) | Map of node number → firmware configuration. Keys must be "1", "2", "3", or "4" (Turing Pi 2 has 4 node slots). | <pre>map(object({<br/>    firmware = string<br/>  }))</pre> | n/a | yes |
+| <a name="input_nodes"></a> [nodes](#input\_nodes) | Map of node number → firmware configuration. Keys must be "1", "2", "3", or "4" (Turing Pi 2 has 4 node slots). | <pre>map(object({<br/>    # Firmware source. An http(s):// URL is flashed via firmware_url (BMC pulls<br/>    # directly — reliable completion signal); any other value is treated as a<br/>    # local file path via firmware_file.<br/>    firmware = string<br/>  }))</pre> | n/a | yes |
 | <a name="input_power_on_after_flash"></a> [power\_on\_after\_flash](#input\_power\_on\_after\_flash) | Power on nodes after flashing | `bool` | `true` | no |
 
 ## Outputs
