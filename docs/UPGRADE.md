@@ -171,6 +171,14 @@ module "cert_manager" {
 
 ## Breaking Changes
 
+### v1.5.0
+
+**Changes (no module interface breaks):**
+
+- `modules/flash-nodes` now routes the `firmware` input by scheme: an `http(s)://` value is flashed via the provider's `firmware_url` (reliable BMC-pull completion signal); any other value continues to use `firmware_file`. Existing local-path configs are unchanged.
+- The `turingpi` provider requirement for `modules/flash-nodes` (and the `talos-full-stack` example) is raised from `>= 1.0` to `>= 1.5.0`, where `firmware_url` was introduced. Upgrade the provider if you pin it below 1.5.0.
+- `examples/talos-full-stack` and `examples/k3s-full-stack`: added the `helm` (`~> 2.0`) and `kubectl` (`gavinbunney/kubectl`, `>= 1.14`) `required_providers` entries the addon modules need — these examples previously failed `init`. Removed a nonexistent `allow_scheduling_on_control_plane` input from the Talos example.
+
 ### v1.4.1
 
 **Changes (no breaks):**

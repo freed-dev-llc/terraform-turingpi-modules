@@ -7,12 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-05-24
+
+### Changed
+
+- **`modules/flash-nodes`**: `firmware` sources are now routed by scheme — an `http(s)://` value is flashed via the provider's `firmware_url` (BMC pulls directly; its `Done` signal covers download + decompress + eMMC write end-to-end), and any other value continues to use `firmware_file` (local path). Previously every value was sent to `firmware_file`, so a URL — as passed by the `talos-full-stack` example — went down the streaming-upload path that reports `Done` before the eMMC write completes (provider v1.5.0 flags this as unreliable). Backward compatible: existing local-path configs are unchanged. The provider constraint is bumped to `>= 1.5.0` (where `firmware_url` was introduced); the `examples/talos-full-stack` pin matches.
+
 ### Fixed
 
+- **`examples/talos-full-stack` & `examples/k3s-full-stack`**: these examples configured `provider "helm"` / `provider "kubectl"` but never declared them in `required_providers`, so `tofu/terraform init` inferred `hashicorp/kubectl` and failed (`registry does not have a provider named hashicorp/kubectl`) — the addon modules require `gavinbunney/kubectl`. Added the missing `helm` (`hashicorp/helm`, `~> 2.0`) and `kubectl` (`gavinbunney/kubectl`, `>= 1.14`) entries. helm is pinned to 2.x because the examples use the v2 nested `kubernetes {}` provider block, which helm v3 replaced with an attribute. Both examples now pass `validate`.
+- **`examples/talos-full-stack`**: removed `allow_scheduling_on_control_plane = true` from the `talos-cluster` module call — that variable does not exist on the module (control-plane scheduling is done via `controlplane_patches`), so the example failed `validate` with "Unsupported argument".
+- **Helper scripts** (`scripts/cluster-preflight.sh`, `scripts/talos-wipe.sh`, `scripts/k3s-wipe.sh`): fixed credential auto-load, which referenced misspelled secrets filenames `~/.secrets/turning-pi-cluster-bmc` and `~/.secrets/turningpi-cluster` (double-n "turning") that never matched the real single-n files (`turing-pi-cluster-bmc`, `turingpi-cluster`). The lookups silently failed, so the scripts fell back to the hardcoded BMC defaults (`root` / `turing`) and the wrong SSH key. Corrected all references; the script headers now also document the combined `turing-pi-cluster-bmc` format the code checks first.
 - **`modules/addons/ingress-nginx`**: corrected the module source in the README Usage example from the non-existent `freed-dev-llc/ingress-nginx/kubernetes` to the canonical `freed-dev-llc/modules/turingpi//modules/addons/ingress-nginx` (matches the other addon READMEs and the module's own Registry badge). The old value failed `terraform init` for anyone who copy-pasted it. The line sits above the `BEGIN_TF_DOCS` marker, so terraform-docs never regenerated it. Docs only — no behavior change (#48).
 
 ### Documentation
 
+- Release stamps bumped to v1.5.0: `README.md` "Verified Configurations" header (modules) and the `docs/MANUAL_TEST_PLAN.md` "Module Version" footer; `docs/UPGRADE.md` gained a v1.5.0 section. Also corrected a `turning-`→`turing-` secrets-filename typo in an earlier changelog entry.
 - `docs/MANUAL_TEST_PLAN.md`: bumped the "Module Version" footer stamp from v1.4.1 to v1.4.2 to track the current release (#48).
 
 ## [1.4.2] - 2026-05-22
@@ -119,8 +129,8 @@ No breaking changes. Module input/output signatures unchanged. The `talos-image`
 ### Fixed
 
 - Helper scripts bash `set -e` compatibility (STEP increment, log_output function)
-- Scripts now auto-load credentials from `~/.secrets/turning-pi-cluster-bmc` file format
-- Scripts auto-detect SSH key from `~/.secrets/turningpi-cluster`
+- Scripts now auto-load credentials from `~/.secrets/turing-pi-cluster-bmc` file format
+- Scripts auto-detect SSH key from `~/.secrets/turingpi-cluster`
 
 ## [1.3.6] - 2026-01-19
 
@@ -326,7 +336,8 @@ No breaking changes. Module input/output signatures unchanged. The `talos-image`
 - **metallb addon** - MetalLB load balancer
 - **ingress-nginx addon** - NGINX Ingress controller
 
-[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.2...HEAD
+[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.3.10...v1.4.0
