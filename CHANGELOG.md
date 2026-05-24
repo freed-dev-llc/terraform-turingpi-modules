@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`modules/k3s-cluster`**: new `local_path_default` variable (default `true`, preserving current behavior). When set to `false` (and `disable_local_storage` is not set), the module strips the default-class annotation from K3s's built-in `local-path` StorageClass after install, so a separately-installed default (e.g. Longhorn) is the **sole** default — fixes the "two default StorageClasses" ambiguity where PVCs that omit `storageClassName` bind nondeterministically. `local-path` stays available for explicit use. `examples/k3s-full-stack` now sets `local_path_default = false` since it installs Longhorn as the default. (Closes #51)
+
 ### Fixed
 
 - **`scripts/find-armbian-image.sh`**: image search always returned "no image found". It captured the GitHub releases JSON into a shell variable and piped it back through `echo` to `jq`; control characters in release bodies corrupted the round-trip so `jq` failed to parse — and the error was hidden by `2>/dev/null`. Now reads the API response from a temp file (and no longer suppresses `jq` errors). Also fixed an invalid-regex-escape (the match pattern is passed via `jq --arg` instead of being interpolated into the program), added a `--kernel` flag (`vendor`/`current`/`edge`/`any`, default `vendor`) so the vendor RK1 image is selected deterministically, widened the search to `per_page=30`, and hardened the no-match path (`.[0] // empty`).
