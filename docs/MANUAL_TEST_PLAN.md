@@ -22,15 +22,15 @@ export TURINGPI_PASSWORD=turing
 export TURINGPI_ENDPOINT=https://turingpi.local
 
 # Node IPs (adjust for your network)
-export CP_IP=192.168.1.101
-export WORKER1_IP=192.168.1.102
-export WORKER2_IP=192.168.1.103
-export WORKER3_IP=192.168.1.104
+export CP_IP=10.10.88.73
+export WORKER1_IP=10.10.88.74
+export WORKER2_IP=10.10.88.75
+export WORKER3_IP=10.10.88.76
 
 # MetalLB IP range
-export METALLB_RANGE="192.168.1.200-192.168.1.220"
-export INGRESS_IP=192.168.1.200
-export PORTAINER_IP=192.168.1.201
+export METALLB_RANGE="10.10.88.80-10.10.88.89"
+export INGRESS_IP=10.10.88.80
+export PORTAINER_IP=10.10.88.81
 ```
 
 ---
@@ -186,19 +186,19 @@ module "talos_cluster" {
 }
 
 variable "cp_ip" {
-  default = "192.168.1.101"
+  default = "10.10.88.73"
 }
 
 variable "worker1_ip" {
-  default = "192.168.1.102"
+  default = "10.10.88.74"
 }
 
 variable "worker2_ip" {
-  default = "192.168.1.103"
+  default = "10.10.88.75"
 }
 
 variable "worker3_ip" {
-  default = "192.168.1.104"
+  default = "10.10.88.76"
 }
 
 output "kubeconfig_path" {
@@ -327,19 +327,19 @@ module "k3s_cluster" {
 }
 
 variable "cp_ip" {
-  default = "192.168.1.101"
+  default = "10.10.88.73"
 }
 
 variable "worker1_ip" {
-  default = "192.168.1.102"
+  default = "10.10.88.74"
 }
 
 variable "worker2_ip" {
-  default = "192.168.1.103"
+  default = "10.10.88.75"
 }
 
 variable "worker3_ip" {
-  default = "192.168.1.104"
+  default = "10.10.88.76"
 }
 
 output "kubeconfig_path" {
@@ -408,7 +408,7 @@ module "metallb" {
 }
 
 variable "metallb_range" {
-  default = "192.168.1.200-192.168.1.220"
+  default = "10.10.88.80-10.10.88.89"
 }
 
 output "metallb_pool" {
@@ -447,7 +447,7 @@ module "ingress" {
 }
 
 variable "ingress_ip" {
-  default = "192.168.1.200"
+  default = "10.10.88.80"
 }
 
 output "ingress_ip" {
@@ -583,7 +583,7 @@ module "portainer" {
 }
 
 variable "portainer_ip" {
-  default = "192.168.1.201"
+  default = "10.10.88.81"
 }
 
 output "portainer_url" {
@@ -779,4 +779,4 @@ kubectl get l2advertisement -n metallb-system -o yaml
 **Tester**: _______________
 **Date**: _______________
 **Cluster Type**: ⬜ Talos / ⬜ K3s
-**Module Version**: v1.5.0
+**Module Version**: v1.6.0

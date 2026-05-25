@@ -1,5 +1,5 @@
 variable "ip_range" {
-  description = "IP range for LoadBalancer services (e.g., 192.168.1.200-192.168.1.220)"
+  description = "IP range for LoadBalancer services (e.g., 10.10.88.80-10.10.88.89)"
   type        = string
 }
 

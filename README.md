@@ -37,13 +37,13 @@ module "talos" {
   version = "~> 1.4"
 
   cluster_name     = "homelab"
-  cluster_endpoint = "https://192.168.1.101:6443"
+  cluster_endpoint = "https://10.10.88.73:6443"
 
-  control_plane = [{ host = "192.168.1.101" }]
+  control_plane = [{ host = "10.10.88.73" }]
   workers = [
-    { host = "192.168.1.102" },
-    { host = "192.168.1.103" },
-    { host = "192.168.1.104" }
+    { host = "10.10.88.74" },
+    { host = "10.10.88.75" },
+    { host = "10.10.88.76" }
   ]
 
   # Enable NVMe for Longhorn
@@ -56,7 +56,7 @@ module "talos" {
 module "metallb" {
   source     = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   depends_on = [module.talos]
-  ip_range   = "192.168.1.200-192.168.1.220"
+  ip_range   = "10.10.88.80-10.10.88.89"
 }
 ```
 
@@ -71,15 +71,15 @@ module "k3s" {
   cluster_name = "homelab"
 
   control_plane = {
-    host     = "192.168.1.101"
+    host     = "10.10.88.73"
     ssh_user = "root"
     ssh_key  = file("~/.ssh/id_rsa")
   }
 
   workers = [
-    { host = "192.168.1.102", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") },
-    { host = "192.168.1.103", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") },
-    { host = "192.168.1.104", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") }
+    { host = "10.10.88.74", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") },
+    { host = "10.10.88.75", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") },
+    { host = "10.10.88.76", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") }
   ]
 
   # Enable NVMe for Longhorn
@@ -92,7 +92,7 @@ module "k3s" {
 module "metallb" {
   source     = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   depends_on = [module.k3s]
-  ip_range   = "192.168.1.200-192.168.1.220"
+  ip_range   = "10.10.88.80-10.10.88.89"
 }
 ```
 
@@ -109,14 +109,14 @@ module "cluster" {
 module "metallb" {
   source     = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   depends_on = [module.cluster]
-  ip_range   = "192.168.1.200-192.168.1.220"
+  ip_range   = "10.10.88.80-10.10.88.89"
 }
 
 # Ingress controller
 module "ingress" {
   source          = "freed-dev-llc/modules/turingpi//modules/addons/ingress-nginx"
   depends_on      = [module.metallb]
-  loadbalancer_ip = "192.168.1.200"
+  loadbalancer_ip = "10.10.88.80"
 }
 
 # Distributed storage
@@ -138,7 +138,7 @@ module "monitoring" {
 module "portainer" {
   source          = "freed-dev-llc/modules/turingpi//modules/addons/portainer"
   depends_on      = [module.metallb]
-  loadbalancer_ip = "192.168.1.201"
+  loadbalancer_ip = "10.10.88.81"
 }
 ```
 
@@ -246,7 +246,7 @@ module "monitoring" {
 
 ## Verified Configurations
 
-Tested and verified on v1.5.0 (modules) / v1.5.0 (provider):
+Tested and verified on v1.6.0 (modules) / v1.5.1 (provider):
 
 - K3s v1.31.4+k3s1 on Armbian 26.2.0-trunk.151 (trixie)
 - BMC firmware v2.3.4

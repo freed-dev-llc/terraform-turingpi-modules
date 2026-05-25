@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-05-24
+
 ### Added
 
 - **`modules/k3s-cluster`**: new `local_path_default` variable (default `true`, preserving current behavior). When set to `false` (and `disable_local_storage` is not set), the module makes K3s's built-in `local-path` non-default **durably**, so a separately-installed default (e.g. Longhorn) is the **sole** default — fixing the "two default StorageClasses" ambiguity where PVCs that omit `storageClassName` bind nondeterministically. A bare annotation isn't sufficient (K3s re-applies its bundled `local-storage` manifest on every restart, re-asserting `is-default-class=true`), so the module marks that manifest with a `.skip` — which per the K3s docs does *not* remove the already-created resources, so the local-path provisioner keeps running — and then clears the default annotation, which now survives k3s restarts/reboots. `local-path` stays usable for explicit `storageClassName` but is no longer k3s-managed (won't auto-upgrade). `examples/k3s-full-stack` sets `local_path_default = false`. Verified on hardware: survives `systemctl restart k3s`. (Closes #51)
@@ -18,6 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`scripts/k3s-wipe.sh` & `scripts/talos-wipe.sh`**: BMC power-off verification always reported nodes as "still ON" (status `unknown`), even when they had powered off. `check_power_status` matched an *unquoted* digit (`"node1":0`), but the BMC returns *quoted* values (`"node1":"0"`), so the pattern never matched and `wait_for_power_off` always timed out — triggering spurious force-power-off warnings at the end of an otherwise-successful wipe. Now parses the value tolerating quotes/whitespace (verified live against the BMC). Fixes #52.
 
 - **`scripts/find-armbian-image.sh`**: image search always returned "no image found". It captured the GitHub releases JSON into a shell variable and piped it back through `echo` to `jq`; control characters in release bodies corrupted the round-trip so `jq` failed to parse — and the error was hidden by `2>/dev/null`. Now reads the API response from a temp file (and no longer suppresses `jq` errors). Also fixed an invalid-regex-escape (the match pattern is passed via `jq --arg` instead of being interpolated into the program), added a `--kernel` flag (`vendor`/`current`/`edge`/`any`, default `vendor`) so the vendor RK1 image is selected deterministically, widened the search to `per_page=30`, and hardened the no-match path (`.[0] // empty`).
+
+### Documentation
+
+- **`modules/flash-nodes`**: regenerated the terraform-docs block so the rendered inputs table reflects `firmware_url` (added in v1.5.0). Docs only — no behavior change (#49).
+- **Example IPs standardized to `10.10.88.x`**: the root `README.md`, root `main.tf` comments, all module READMEs (`k3s-cluster`, `talos-cluster`, addons), `docs/MANUAL_TEST_PLAN.md`, the `metallb` variable description, and `examples/k3s-full-stack` used a mix of `192.168.1.x` placeholders. Aligned them on the `10.10.88.x` scheme already used in the provider repo and the rest of these docs — control plane `.73`, workers `.74`/`.75`/`.76`, MetalLB pool `.80`–`.89`. Docs only — no module behavior change.
 
 ## [1.5.0] - 2026-05-24
 
@@ -348,7 +355,8 @@ No breaking changes. Module input/output signatures unchanged. The `talos-image`
 - **metallb addon** - MetalLB load balancer
 - **ingress-nginx addon** - NGINX Ingress controller
 
-[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.0...v1.4.1

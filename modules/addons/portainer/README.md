@@ -16,7 +16,7 @@ module "portainer" {
 
   # Use LoadBalancer with MetalLB
   service_type    = "LoadBalancer"
-  loadbalancer_ip = "192.168.1.81"
+  loadbalancer_ip = "10.10.88.81"
 
   # Or use NodePort
   # service_type = "NodePort"
@@ -139,13 +139,13 @@ If you have a Business Edition license, you can take advantage of:
 ```hcl
 module "metallb" {
   source   = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
-  ip_range = "192.168.1.80-192.168.1.89"
+  ip_range = "10.10.88.80-10.10.88.89"
 }
 
 module "portainer" {
   source          = "freed-dev-llc/modules/turingpi//modules/addons/portainer"
   depends_on      = [module.metallb]
-  loadbalancer_ip = "192.168.1.81"
+  loadbalancer_ip = "10.10.88.81"
 }
 
 output "portainer_url" {
@@ -162,12 +162,12 @@ module "cluster" {
   version = ">= 1.4.0"
 
   cluster_name     = "homelab"
-  cluster_endpoint = "https://192.168.1.101:6443"
-  control_plane    = [{ host = "192.168.1.101" }]
+  cluster_endpoint = "https://10.10.88.73:6443"
+  control_plane    = [{ host = "10.10.88.73" }]
   workers = [
-    { host = "192.168.1.102" },
-    { host = "192.168.1.103" },
-    { host = "192.168.1.104" }
+    { host = "10.10.88.74" },
+    { host = "10.10.88.75" },
+    { host = "10.10.88.76" }
   ]
   kubeconfig_path = "./kubeconfig"
 }
@@ -176,14 +176,14 @@ module "cluster" {
 module "metallb" {
   source     = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   depends_on = [module.cluster]
-  ip_range   = "192.168.1.200-192.168.1.220"
+  ip_range   = "10.10.88.80-10.10.88.89"
 }
 
 # Deploy Portainer agent
 module "portainer" {
   source          = "freed-dev-llc/modules/turingpi//modules/addons/portainer"
   depends_on      = [module.metallb]
-  loadbalancer_ip = "192.168.1.201"
+  loadbalancer_ip = "10.10.88.81"
 }
 
 output "portainer_connection" {

@@ -18,7 +18,7 @@ module "ingress" {
   source  = "freed-dev-llc/modules/turingpi//modules/addons/ingress-nginx"
   version = ">= 1.4.0"
 
-  loadbalancer_ip = "192.168.1.200"  # Optional: use with MetalLB
+  loadbalancer_ip = "10.10.88.80"  # Optional: use with MetalLB
 }
 ```
 
