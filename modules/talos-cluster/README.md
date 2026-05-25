@@ -13,20 +13,20 @@ module "cluster" {
   version = ">= 1.4.0"
 
   cluster_name     = "my-cluster"
-  cluster_endpoint = "https://192.168.1.101:6443"
+  cluster_endpoint = "https://10.10.88.73:6443"
 
   # Pin versions to match your Talos image
   talos_version      = "v1.9.2"
   kubernetes_version = "v1.32.1"
 
   control_plane = [
-    { host = "192.168.1.101", hostname = "cp1" }
+    { host = "10.10.88.73", hostname = "cp1" }
   ]
 
   workers = [
-    { host = "192.168.1.102", hostname = "worker1" },
-    { host = "192.168.1.103", hostname = "worker2" },
-    { host = "192.168.1.104", hostname = "worker3" }
+    { host = "10.10.88.74", hostname = "worker1" },
+    { host = "10.10.88.75", hostname = "worker2" },
+    { host = "10.10.88.76", hostname = "worker3" }
   ]
 
   kubeconfig_path = "./kubeconfig"
@@ -41,16 +41,16 @@ module "cluster" {
   version = ">= 1.4.0"
 
   cluster_name     = "my-cluster"
-  cluster_endpoint = "https://192.168.1.101:6443"
+  cluster_endpoint = "https://10.10.88.73:6443"
 
   talos_version      = "v1.9.2"
   kubernetes_version = "v1.32.1"
 
-  control_plane = [{ host = "192.168.1.101" }]
+  control_plane = [{ host = "10.10.88.73" }]
   workers = [
-    { host = "192.168.1.102" },
-    { host = "192.168.1.103" },
-    { host = "192.168.1.104" }
+    { host = "10.10.88.74" },
+    { host = "10.10.88.75" },
+    { host = "10.10.88.76" }
   ]
 
   # Enable NVMe storage for Longhorn

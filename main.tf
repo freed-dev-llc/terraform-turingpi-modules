@@ -28,8 +28,8 @@
 #     source  = "freed-dev-llc/modules/turingpi//modules/talos-cluster"
 #     version = ">= 1.0.0"
 #     cluster_name     = "my-cluster"
-#     cluster_endpoint = "https://192.168.1.101:6443"
-#     control_plane    = [{ host = "192.168.1.101" }]
+#     cluster_endpoint = "https://10.10.88.73:6443"
+#     control_plane    = [{ host = "10.10.88.73" }]
 #   }
 #
 # See README.md and examples/ for complete documentation.

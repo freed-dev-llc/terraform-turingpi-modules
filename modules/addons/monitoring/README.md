@@ -99,9 +99,9 @@ module "monitoring" {
   # control_plane_endpoint = "10.10.88.73"
 
   # Optional: External monitoring targets
-  # external_targets = ["192.168.1.100", "192.168.1.101"]
-  # docker_hosts     = ["192.168.1.100"]
-  # cadvisor_hosts   = ["192.168.1.100"]
+  # external_targets = ["10.10.88.100", "10.10.88.101"]
+  # docker_hosts     = ["10.10.88.100"]
+  # cadvisor_hosts   = ["10.10.88.100"]
 }
 ```
 

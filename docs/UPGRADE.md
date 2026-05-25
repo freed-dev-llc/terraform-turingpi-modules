@@ -171,11 +171,12 @@ module "cert_manager" {
 
 ## Breaking Changes
 
-### Unreleased
+### v1.6.0
 
 **Changes (no breaks; opt-in):**
 
 - `modules/k3s-cluster` adds `local_path_default` (default `true` — no change to existing behavior). If you install another default StorageClass (e.g. Longhorn) on K3s, set `local_path_default = false` so K3s's built-in `local-path` is no longer also marked default; otherwise the cluster has **two** default StorageClasses and PVCs omitting `storageClassName` bind nondeterministically. To make this stick across k3s restarts (K3s otherwise re-applies its bundled manifest and re-asserts the default), the module marks the bundled `local-storage` manifest with a `.skip` and clears the annotation — so `local-path` stays usable for explicit `storageClassName` but is no longer k3s-managed (won't auto-upgrade on k3s upgrades). Ignored when `disable_local_storage = true`.
+- `modules/talos-cluster` now applies the per-node `hostname` input (on `control_plane`/`workers`) to `machine.network.hostname`. Previously it was silently ignored and nodes came up with Talos auto-generated names. If you already set `hostname` values, expect nodes to adopt them on the next `apply` — note Talos cannot rename a node whose hostname is already set in its running config, so this takes effect on a fresh build/reset, not a live rename.
 
 ### v1.5.0
 

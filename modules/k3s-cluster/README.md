@@ -19,24 +19,24 @@ module "k3s" {
   cluster_name = "my-cluster"
 
   control_plane = {
-    host     = "192.168.1.101"
+    host     = "10.10.88.73"
     ssh_user = "root"
     ssh_key  = file("~/.ssh/id_rsa")
   }
 
   workers = [
     {
-      host     = "192.168.1.102"
+      host     = "10.10.88.74"
       ssh_user = "root"
       ssh_key  = file("~/.ssh/id_rsa")
     },
     {
-      host     = "192.168.1.103"
+      host     = "10.10.88.75"
       ssh_user = "root"
       ssh_key  = file("~/.ssh/id_rsa")
     },
     {
-      host     = "192.168.1.104"
+      host     = "10.10.88.76"
       ssh_user = "root"
       ssh_key  = file("~/.ssh/id_rsa")
     }
@@ -56,14 +56,14 @@ module "k3s" {
   cluster_name = "my-cluster"
 
   control_plane = {
-    host         = "192.168.1.101"
+    host         = "10.10.88.73"
     ssh_user     = "root"
     ssh_password = var.ssh_password
   }
 
   workers = [
     {
-      host         = "192.168.1.102"
+      host         = "10.10.88.74"
       ssh_user     = "root"
       ssh_password = var.ssh_password
     }
@@ -89,15 +89,15 @@ module "k3s" {
   k3s_version  = "v1.31.4+k3s1"
 
   control_plane = {
-    host     = "192.168.1.101"
+    host     = "10.10.88.73"
     ssh_user = "root"
     ssh_key  = file("~/.ssh/id_rsa")
   }
 
   workers = [
-    { host = "192.168.1.102", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") },
-    { host = "192.168.1.103", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") },
-    { host = "192.168.1.104", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") }
+    { host = "10.10.88.74", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") },
+    { host = "10.10.88.75", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") },
+    { host = "10.10.88.76", ssh_user = "root", ssh_key = file("~/.ssh/id_rsa") }
   ]
 
   # Enable NVMe storage for Longhorn
@@ -235,14 +235,14 @@ provider "kubectl" {
 module "metallb" {
   source     = "freed-dev-llc/modules/turingpi//modules/addons/metallb"
   depends_on = [module.k3s]
-  ip_range   = "192.168.1.200-192.168.1.220"
+  ip_range   = "10.10.88.80-10.10.88.89"
 }
 
 # Ingress NGINX
 module "ingress" {
   source          = "freed-dev-llc/modules/turingpi//modules/addons/ingress-nginx"
   depends_on      = [module.metallb]
-  loadbalancer_ip = "192.168.1.200"
+  loadbalancer_ip = "10.10.88.80"
 }
 
 # Longhorn storage (with NVMe)
@@ -265,7 +265,7 @@ module "monitoring" {
 module "portainer" {
   source          = "freed-dev-llc/modules/turingpi//modules/addons/portainer"
   depends_on      = [module.metallb]
-  loadbalancer_ip = "192.168.1.201"
+  loadbalancer_ip = "10.10.88.81"
 }
 ```
 
