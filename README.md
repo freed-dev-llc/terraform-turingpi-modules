@@ -246,7 +246,7 @@ module "monitoring" {
 
 ## Verified Configurations
 
-Tested and verified on v1.6.0 (modules) / v1.5.1 (provider):
+Tested and verified on v1.6.1 (modules) / v1.5.1 (provider):
 
 - K3s v1.31.4+k3s1 on Armbian 26.2.0-trunk.151 (trixie)
 - BMC firmware v2.3.4

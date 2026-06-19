@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- **Refreshed stale version references for v1.6.1**: the root `README.md` "Verified Configurations" line (`v1.6.0` → `v1.6.1` modules), `docs/MANUAL_TEST_PLAN.md` footer "Module Version", and added a `v1.6.1` entry to `docs/UPGRADE.md`. The standardized `>= 1.4.0` submodule version floors are intentional and left unchanged. Docs only — no module behavior change.
+
 ## [1.6.1] - 2026-06-18
 
 ### Fixed

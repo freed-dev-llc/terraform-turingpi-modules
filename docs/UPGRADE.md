@@ -171,6 +171,12 @@ module "cert_manager" {
 
 ## Breaking Changes
 
+### v1.6.1
+
+**Changes (no breaks):**
+
+- `modules/talos-cluster`: the per-node `hostname` patch added in v1.6.0 now treats an empty or whitespace-only `hostname` as "no hostname" — previously a blank value (e.g. from an unset template variable) was pushed to the node as `machine.network.hostname: ""`. No action needed unless you were relying on a blank value being applied; null/empty/whitespace all now leave the Talos auto-generated name. The `hostname` input is also now documented (see the module README "Node Hostnames" section).
+
 ### v1.6.0
 
 **Changes (no breaks; opt-in):**
