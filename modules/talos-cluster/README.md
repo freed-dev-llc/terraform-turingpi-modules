@@ -86,7 +86,7 @@ module "cluster" {
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_endpoint"></a> [cluster\_endpoint](#input\_cluster\_endpoint) | Kubernetes API endpoint (https://IP:6443) | `string` | n/a | yes |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the Kubernetes cluster | `string` | n/a | yes |
-| <a name="input_control_plane"></a> [control\_plane](#input\_control\_plane) | Control plane node configurations | <pre>list(object({<br/>    host     = string<br/>    hostname = optional(string)<br/>  }))</pre> | n/a | yes |
+| <a name="input_control_plane"></a> [control\_plane](#input\_control\_plane) | Control plane node configurations. Optional per-node `hostname` is applied at first boot via a Talos config patch; null/empty/whitespace leaves the Talos auto-generated name. Talos cannot rename an already-running node ('static hostname already set'), so set hostnames on a fresh build — changing them on a live cluster is rejected. | <pre>list(object({<br/>    host     = string<br/>    hostname = optional(string)<br/>  }))</pre> | n/a | yes |
 | <a name="input_controlplane_patches"></a> [controlplane\_patches](#input\_controlplane\_patches) | Config patches for control plane nodes (YAML strings) | `list(string)` | `[]` | no |
 | <a name="input_kubeconfig_path"></a> [kubeconfig\_path](#input\_kubeconfig\_path) | Path to write kubeconfig file (optional) | `string` | `null` | no |
 | <a name="input_kubernetes_version"></a> [kubernetes\_version](#input\_kubernetes\_version) | Kubernetes version (e.g., 'v1.32.1'). Must be compatible with the Talos version. | `string` | `null` | no |
@@ -97,7 +97,7 @@ module "cluster" {
 | <a name="input_talos_version"></a> [talos\_version](#input\_talos\_version) | Talos version for config generation (e.g., 'v1.11.6'). Must match the Talos image on nodes. | `string` | `null` | no |
 | <a name="input_talosconfig_path"></a> [talosconfig\_path](#input\_talosconfig\_path) | Path to write talosconfig file (optional) | `string` | `null` | no |
 | <a name="input_worker_patches"></a> [worker\_patches](#input\_worker\_patches) | Config patches for worker nodes (YAML strings) | `list(string)` | `[]` | no |
-| <a name="input_workers"></a> [workers](#input\_workers) | Worker node configurations | <pre>list(object({<br/>    host     = string<br/>    hostname = optional(string)<br/>  }))</pre> | `[]` | no |
+| <a name="input_workers"></a> [workers](#input\_workers) | Worker node configurations. Optional per-node `hostname` behaves as on `control_plane`: applied at first boot, null/empty/whitespace keeps the Talos default, and a live node cannot be renamed. | <pre>list(object({<br/>    host     = string<br/>    hostname = optional(string)<br/>  }))</pre> | `[]` | no |
 
 ## Outputs
 
@@ -113,6 +113,31 @@ module "cluster" {
 | <a name="output_nvme_mountpoint"></a> [nvme\_mountpoint](#output\_nvme\_mountpoint) | NVMe mount point (if enabled) |
 | <a name="output_talosconfig_path"></a> [talosconfig\_path](#output\_talosconfig\_path) | Path to talosconfig file (if written) |
 <!-- END_TF_DOCS -->
+
+## Node Hostnames
+
+Each entry in `control_plane` / `workers` accepts an optional `hostname`:
+
+```hcl
+control_plane = [{ host = "10.10.88.73", hostname = "turing-cp1" }]
+workers = [
+  { host = "10.10.88.74", hostname = "turing-w1" },
+  { host = "10.10.88.75", hostname = "turing-w2" },
+]
+```
+
+The module renders one shared machine config per role, so the hostname is applied
+**per node** as a `machine.network.hostname` config patch on the
+`talos_machine_configuration_apply` resource. When `hostname` is null, empty, or
+whitespace-only the patch is omitted and the node keeps its Talos auto-generated
+name (`talos-<random>`).
+
+> **Caveat — fresh builds only.** Talos sets the static hostname once, early in
+> the first boot. It **cannot rename an already-running node**: re-applying a
+> changed hostname to a live cluster fails with `static hostname already set`.
+> Set hostnames before the nodes first boot into Talos (i.e. on a fresh
+> flash/build). To rename an existing node, wipe and re-provision it (see
+> [Resetting Talos Nodes](#resetting-talos-nodes)).
 
 ## NVMe Storage Configuration
 

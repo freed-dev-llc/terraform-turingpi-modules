@@ -9,7 +9,7 @@ variable "cluster_endpoint" {
 }
 
 variable "control_plane" {
-  description = "Control plane node configurations"
+  description = "Control plane node configurations. Optional per-node `hostname` is applied at first boot via a Talos config patch; null/empty/whitespace leaves the Talos auto-generated name. Talos cannot rename an already-running node ('static hostname already set'), so set hostnames on a fresh build — changing them on a live cluster is rejected."
   type = list(object({
     host     = string
     hostname = optional(string)
@@ -21,7 +21,7 @@ variable "control_plane" {
 }
 
 variable "workers" {
-  description = "Worker node configurations"
+  description = "Worker node configurations. Optional per-node `hostname` behaves as on `control_plane`: applied at first boot, null/empty/whitespace keeps the Talos default, and a live node cannot be renamed."
   type = list(object({
     host     = string
     hostname = optional(string)

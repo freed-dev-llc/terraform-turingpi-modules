@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`modules/talos-cluster`**: the per-node hostname patch added in v1.6.0 guarded only on `hostname != null`, so an explicit empty or whitespace-only string (e.g. from an unset template variable) slipped through and pushed `machine.network.hostname: ""` to the node. The guard now uses `trimspace(...) != ""` (with `try()` covering the null case), and the patch value is trimmed, so blank hostnames are treated the same as null (no-op, Talos keeps its auto-generated name).
+
+### Documentation
+
+- **`modules/talos-cluster`**: documented the per-node `hostname` input — added a "Node Hostnames" section to the module README and expanded the `control_plane`/`workers` variable descriptions to note that hostnames are applied at first boot only; Talos cannot rename an already-running node (`static hostname already set`), so a live cluster must be wiped and re-provisioned to change a hostname.
+
 ## [1.6.0] - 2026-05-24
 
 ### Added
