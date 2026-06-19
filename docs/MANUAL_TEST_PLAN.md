@@ -779,4 +779,4 @@ kubectl get l2advertisement -n metallb-system -o yaml
 **Tester**: _______________
 **Date**: _______________
 **Cluster Type**: ⬜ Talos / ⬜ K3s
-**Module Version**: v1.6.0
+**Module Version**: v1.6.1
