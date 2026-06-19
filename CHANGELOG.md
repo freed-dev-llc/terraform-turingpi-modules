@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] - 2026-06-18
+
 ### Fixed
 
 - **`modules/talos-cluster`**: the per-node hostname patch added in v1.6.0 guarded only on `hostname != null`, so an explicit empty or whitespace-only string (e.g. from an unset template variable) slipped through and pushed `machine.network.hostname: ""` to the node. The guard now uses `trimspace(...) != ""` (with `try()` covering the null case), and the patch value is trimmed, so blank hostnames are treated the same as null (no-op, Talos keeps its auto-generated name).
@@ -363,7 +365,8 @@ No breaking changes. Module input/output signatures unchanged. The `talos-image`
 - **metallb addon** - MetalLB load balancer
 - **ingress-nginx addon** - NGINX Ingress controller
 
-[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.6.1...HEAD
+[1.6.1]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.1...v1.4.2
