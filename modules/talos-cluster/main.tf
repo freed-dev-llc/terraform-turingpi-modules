@@ -65,9 +65,10 @@ resource "talos_machine_configuration_apply" "controlplane" {
   # Per-node hostname: the role config above is shared across nodes, so set
   # machine.network.hostname here via a per-node patch. Without this the
   # optional `hostname` input was ignored and nodes got Talos auto-generated
-  # names (fixes #56). No-op when hostname is null.
-  config_patches = each.value.hostname != null ? [
-    yamlencode({ machine = { network = { hostname = each.value.hostname } } })
+  # names (fixes #56). No-op when hostname is null, empty, or whitespace-only
+  # (try() guards trimspace against the null case).
+  config_patches = try(trimspace(each.value.hostname), "") != "" ? [
+    yamlencode({ machine = { network = { hostname = trimspace(each.value.hostname) } } })
   ] : []
 }
 
@@ -80,8 +81,8 @@ resource "talos_machine_configuration_apply" "worker" {
   node                        = each.value.host
 
   # Per-node hostname (see control plane equivalent) — fixes #56.
-  config_patches = each.value.hostname != null ? [
-    yamlencode({ machine = { network = { hostname = each.value.hostname } } })
+  config_patches = try(trimspace(each.value.hostname), "") != "" ? [
+    yamlencode({ machine = { network = { hostname = trimspace(each.value.hostname) } } })
   ] : []
 }
 
