@@ -4,6 +4,7 @@
 [![Security](https://github.com/freed-dev-llc/terraform-turingpi-modules/actions/workflows/security.yml/badge.svg)](https://github.com/freed-dev-llc/terraform-turingpi-modules/actions/workflows/security.yml)
 [![Release](https://img.shields.io/github/v/release/freed-dev-llc/terraform-turingpi-modules?logo=github)](https://github.com/freed-dev-llc/terraform-turingpi-modules/releases)
 [![Terraform Registry](https://img.shields.io/badge/Terraform%20Registry-freed--dev--llc%2Fturingpi-blue?logo=terraform)](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi/latest)
+[![OpenTofu Registry](https://img.shields.io/badge/OpenTofu%20Registry-freed--dev--llc%2Fturingpi-blue?logo=opentofu)](https://search.opentofu.org/module/freed-dev-llc/modules/turingpi/latest)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Reusable Terraform modules for Turing Pi cluster provisioning and management.

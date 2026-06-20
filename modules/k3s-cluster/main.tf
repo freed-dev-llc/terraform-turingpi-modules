@@ -127,14 +127,16 @@ resource "null_resource" "k3s_control_plane" {
   # Set hostname BEFORE installing k3s. Fresh Armbian flashes all default
   # to "turing-rk1", which collides with k3s's hostname-based node identity
   # and causes worker joins to fail with "Node password rejected, duplicate
-  # hostname" (fixes #31). No-op when the optional hostname is null.
+  # hostname" (fixes #31). No-op when the optional hostname is null, empty, or
+  # whitespace-only (try() guards trimspace against the null case); the trimmed
+  # value is shell-quoted to guard against word-splitting.
   provisioner "remote-exec" {
-    inline = var.control_plane.hostname != null ? [
+    inline = try(trimspace(var.control_plane.hostname), "") != "" ? [
       "#!/bin/bash",
       "set -e",
-      "echo '=== Setting hostname to ${var.control_plane.hostname} ==='",
-      "hostnamectl set-hostname ${var.control_plane.hostname}",
-      "if grep -qE '^127\\.0\\.1\\.1[[:space:]]' /etc/hosts; then sed -i -E 's/^127\\.0\\.1\\.1[[:space:]].*/127.0.1.1 ${var.control_plane.hostname}/' /etc/hosts; else echo '127.0.1.1 ${var.control_plane.hostname}' >> /etc/hosts; fi",
+      "echo \"=== Setting hostname to ${trimspace(var.control_plane.hostname)} ===\"",
+      "hostnamectl set-hostname \"${trimspace(var.control_plane.hostname)}\"",
+      "if grep -qE '^127\\.0\\.1\\.1[[:space:]]' /etc/hosts; then sed -i -E 's/^127\\.0\\.1\\.1[[:space:]].*/127.0.1.1 ${trimspace(var.control_plane.hostname)}/' /etc/hosts; else echo \"127.0.1.1 ${trimspace(var.control_plane.hostname)}\" >> /etc/hosts; fi",
       ] : [
       "echo 'No hostname override for control plane (current: '$(hostname)')'"
     ]
@@ -250,12 +252,12 @@ resource "null_resource" "k3s_workers" {
   # Set hostname BEFORE installing the k3s agent — see comment on the
   # control plane equivalent (fixes #31).
   provisioner "remote-exec" {
-    inline = each.value.hostname != null ? [
+    inline = try(trimspace(each.value.hostname), "") != "" ? [
       "#!/bin/bash",
       "set -e",
-      "echo '=== Setting hostname to ${each.value.hostname} on worker ${each.key} ==='",
-      "hostnamectl set-hostname ${each.value.hostname}",
-      "if grep -qE '^127\\.0\\.1\\.1[[:space:]]' /etc/hosts; then sed -i -E 's/^127\\.0\\.1\\.1[[:space:]].*/127.0.1.1 ${each.value.hostname}/' /etc/hosts; else echo '127.0.1.1 ${each.value.hostname}' >> /etc/hosts; fi",
+      "echo \"=== Setting hostname to ${trimspace(each.value.hostname)} on worker ${each.key} ===\"",
+      "hostnamectl set-hostname \"${trimspace(each.value.hostname)}\"",
+      "if grep -qE '^127\\.0\\.1\\.1[[:space:]]' /etc/hosts; then sed -i -E 's/^127\\.0\\.1\\.1[[:space:]].*/127.0.1.1 ${trimspace(each.value.hostname)}/' /etc/hosts; else echo \"127.0.1.1 ${trimspace(each.value.hostname)}\" >> /etc/hosts; fi",
       ] : [
       "echo 'No hostname override for worker ${each.key} (current: '$(hostname)')'"
     ]
