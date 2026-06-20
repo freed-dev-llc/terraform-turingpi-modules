@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-06-20
+
+### Added
+
+- **`README.md`**: OpenTofu Registry badge linking to the module's [search.opentofu.org listing](https://search.opentofu.org/module/freed-dev-llc/modules/turingpi/latest), mirroring the badge pairing in the `terraform-provider-turingpi` README.
+- **`modules/talos-cluster`** and **`modules/k3s-cluster`**: per-node `hostname` inputs are now validated at plan time as lowercase RFC-1123 DNS names (null/empty/whitespace still accepted as a no-op). Malformed names — uppercase, underscores, spaces, leading/trailing hyphen, labels longer than 63 chars — now fail fast with a clear message instead of erroring opaquely during Talos config-apply or `hostnamectl`.
+
+### Fixed
+
+- **`modules/k3s-cluster`**: the per-node hostname provisioner guarded only on `hostname != null`, so an explicit empty or whitespace-only string (e.g. from an unset template variable) ran `hostnamectl set-hostname` with no argument and failed the `remote-exec` provisioner under `set -e`. The guard now uses `try(trimspace(...), "") != ""` and the value is trimmed (matching the `talos-cluster` fix in v1.6.1); blank hostnames are a no-op, and the interpolated hostname is shell-quoted to guard against word-splitting.
+
+### Changed
+
+- **`modules/talos-cluster`**: the per-node hostname config patch is now computed once in a shared `local.hostname_patches` map (keyed per node) instead of being duplicated across the control-plane and worker apply resources. Generated configuration is unchanged.
+
 ### Documentation
 
 - **Refreshed stale version references for v1.6.1**: the root `README.md` "Verified Configurations" line (`v1.6.0` → `v1.6.1` modules), `docs/MANUAL_TEST_PLAN.md` footer "Module Version", and added a `v1.6.1` entry to `docs/UPGRADE.md`. The standardized `>= 1.4.0` submodule version floors are intentional and left unchanged. Docs only — no module behavior change.

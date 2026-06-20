@@ -31,6 +31,10 @@ variable "control_plane" {
     condition     = var.control_plane.ssh_key != null || var.control_plane.ssh_password != null
     error_message = "Either ssh_key or ssh_password must be provided for the control plane."
   }
+  validation {
+    condition     = try(trimspace(var.control_plane.hostname), "") == "" || can(regex("^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$", try(trimspace(var.control_plane.hostname), "")))
+    error_message = "control_plane hostname must be a valid lowercase RFC-1123 DNS name (letters, digits, hyphens, dots; each label 1-63 chars, no leading/trailing hyphen) or null/empty to keep the node's current name."
+  }
 }
 
 variable "workers" {
@@ -44,6 +48,13 @@ variable "workers" {
     hostname     = optional(string)
   }))
   default = []
+  validation {
+    condition = alltrue([
+      for n in var.workers :
+      try(trimspace(n.hostname), "") == "" || can(regex("^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$", try(trimspace(n.hostname), "")))
+    ])
+    error_message = "Each workers hostname must be a valid lowercase RFC-1123 DNS name (letters, digits, hyphens, dots; each label 1-63 chars, no leading/trailing hyphen) or null/empty to keep the node's current name."
+  }
 }
 
 variable "kubeconfig_path" {

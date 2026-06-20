@@ -18,6 +18,13 @@ variable "control_plane" {
     condition     = length(var.control_plane) >= 1
     error_message = "At least one control plane node is required."
   }
+  validation {
+    condition = alltrue([
+      for n in var.control_plane :
+      try(trimspace(n.hostname), "") == "" || can(regex("^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$", try(trimspace(n.hostname), "")))
+    ])
+    error_message = "Each control_plane hostname must be a valid lowercase RFC-1123 DNS name (letters, digits, hyphens, dots; each label 1-63 chars, no leading/trailing hyphen) or null/empty to keep the Talos default."
+  }
 }
 
 variable "workers" {
@@ -27,6 +34,13 @@ variable "workers" {
     hostname = optional(string)
   }))
   default = []
+  validation {
+    condition = alltrue([
+      for n in var.workers :
+      try(trimspace(n.hostname), "") == "" || can(regex("^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$", try(trimspace(n.hostname), "")))
+    ])
+    error_message = "Each workers hostname must be a valid lowercase RFC-1123 DNS name (letters, digits, hyphens, dots; each label 1-63 chars, no leading/trailing hyphen) or null/empty to keep the Talos default."
+  }
 }
 
 variable "controlplane_patches" {

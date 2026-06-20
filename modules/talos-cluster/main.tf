@@ -25,6 +25,25 @@ locals {
     var.worker_patches,
     [local.nvme_config_patch]
   ) : var.worker_patches
+
+  # Per-node hostname patch. The role config above is shared across nodes, so
+  # machine.network.hostname is applied per node here. Both roles are merged
+  # into one map (keyed "cp-<idx>"/"w-<idx>" to match each apply resource's
+  # for_each) so the guard logic lives in exactly one place. null, empty, or
+  # whitespace-only hostnames are a no-op (Talos keeps its auto-generated name);
+  # non-blank values are trimmed. try() covers trimspace against the null case.
+  # (fixes #56)
+  hostname_nodes = merge(
+    { for idx, node in var.control_plane : "cp-${idx}" => node },
+    { for idx, node in var.workers : "w-${idx}" => node },
+  )
+  hostname_patches = {
+    for key, node in local.hostname_nodes : key => (
+      try(trimspace(node.hostname), "") != "" ? [
+        yamlencode({ machine = { network = { hostname = trimspace(node.hostname) } } })
+      ] : []
+    )
+  }
 }
 
 # Generate machine secrets (PKI)
@@ -62,14 +81,8 @@ resource "talos_machine_configuration_apply" "controlplane" {
   machine_configuration_input = data.talos_machine_configuration.controlplane.machine_configuration
   node                        = each.value.host
 
-  # Per-node hostname: the role config above is shared across nodes, so set
-  # machine.network.hostname here via a per-node patch. Without this the
-  # optional `hostname` input was ignored and nodes got Talos auto-generated
-  # names (fixes #56). No-op when hostname is null, empty, or whitespace-only
-  # (try() guards trimspace against the null case).
-  config_patches = try(trimspace(each.value.hostname), "") != "" ? [
-    yamlencode({ machine = { network = { hostname = trimspace(each.value.hostname) } } })
-  ] : []
+  # Per-node hostname patch, computed once in local.hostname_patches.
+  config_patches = local.hostname_patches["cp-${each.key}"]
 }
 
 # Apply configuration to worker nodes
@@ -80,10 +93,8 @@ resource "talos_machine_configuration_apply" "worker" {
   machine_configuration_input = data.talos_machine_configuration.worker[0].machine_configuration
   node                        = each.value.host
 
-  # Per-node hostname (see control plane equivalent) — fixes #56.
-  config_patches = try(trimspace(each.value.hostname), "") != "" ? [
-    yamlencode({ machine = { network = { hostname = trimspace(each.value.hostname) } } })
-  ] : []
+  # Per-node hostname patch, computed once in local.hostname_patches.
+  config_patches = local.hostname_patches["w-${each.key}"]
 }
 
 # Bootstrap the cluster (first control plane only)
