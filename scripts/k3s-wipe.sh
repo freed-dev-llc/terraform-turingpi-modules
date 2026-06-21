@@ -136,7 +136,7 @@ while [[ $# -gt 0 ]]; do
         --log) LOG_FILE="$2"; shift 2 ;;
         --dry-run) DRY_RUN=true; shift ;;
         -h|--help) show_help ;;
-        *) log_error "Unknown option: $1"; show_help ;;
+        *) log_error "Unknown option: $1"; exit 1 ;;
     esac
 done
 
@@ -154,8 +154,19 @@ if [[ -z "$BMC_IP" ]]; then
     exit 1
 fi
 
-# Convert comma-separated nodes to array
-IFS=',' read -ra NODE_ARRAY <<< "$NODES"
+# Convert comma-separated nodes to array (trim whitespace, drop empty elements)
+IFS=',' read -ra _RAW_NODES <<< "$NODES"
+NODE_ARRAY=()
+for _n in "${_RAW_NODES[@]}"; do
+    _n="${_n// /}"
+    if [[ -n "$_n" ]]; then
+        NODE_ARRAY+=("$_n")
+    fi
+done
+if [[ ${#NODE_ARRAY[@]} -eq 0 ]]; then
+    log_error "No valid node IPs in --nodes"
+    exit 1
+fi
 
 # Initialize log file
 if [[ -n "$LOG_FILE" ]]; then
@@ -177,11 +188,13 @@ ssh_cmd() {
     local cmd="$*"
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        log_output "[DRY-RUN] ssh -i $SSH_KEY -o StrictHostKeyChecking=no ${BMC_USER}@${node} '$cmd'"
+        log_output "[DRY-RUN] ssh -i $SSH_KEY -o StrictHostKeyChecking=no -o BatchMode=yes ${BMC_USER}@${node} '$cmd'"
         return 0
     fi
 
-    ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "${BMC_USER}@${node}" "$cmd" 2>/dev/null
+    # BatchMode=yes: never fall back to an interactive password prompt (this is a
+    # non-interactive, key-based automation script — a prompt would hang it).
+    ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=10 "${BMC_USER}@${node}" "$cmd" 2>/dev/null
 }
 
 # Get node slot from IP
@@ -194,7 +207,13 @@ get_slot_from_ip() {
         74) echo 2 ;;
         75) echo 3 ;;
         76) echo 4 ;;
-        *) echo $((last_octet - 72)) ;;
+        *)
+            # Derive a slot for non-standard IPs, but only if it maps to a real
+            # BMC node (1-4); otherwise echo 0 (no such node) so power
+            # check/force are safe no-ops instead of acting on a garbage slot.
+            local slot=$((last_octet - 72))
+            if [[ $slot -ge 1 && $slot -le 4 ]]; then echo "$slot"; else echo 0; fi
+            ;;
     esac
 }
 
@@ -235,7 +254,9 @@ force_power_off() {
     response=$(curl -sk -u "${BMC_USER}:${BMC_PASSWORD}" \
         "https://${BMC_IP}/api/bmc?opt=set&type=power&node${slot}=0" 2>/dev/null || echo "error")
 
-    if [[ "$response" == *"error"* || "$response" == "" ]]; then
+    # Only a curl transport failure (-> "error") is a hard failure; an empty
+    # body can be a successful SET. The caller re-verifies via check_power_status.
+    if [[ "$response" == *"error"* ]]; then
         log_error "  Failed to force power off slot $slot"
         return 1
     fi
@@ -254,7 +275,7 @@ wait_for_power_off() {
         if [[ "$status" == "off" ]]; then
             return 0
         fi
-        ((attempt++))
+        attempt=$((attempt + 1))
         sleep 2
     done
     return 1

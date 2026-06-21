@@ -14,7 +14,7 @@
 #   -o, --output DIR        Download directory (default: current dir)
 #   --autoconfig FILE       Generate autoconfig file for first boot setup
 #   --root-password PASS    Root password for autoconfig (default: 1234)
-#   --hostname NAME         Hostname for autoconfig
+#   --hostname NAME         Hostname hint (printed only; NOT applied by autoconfig)
 #   --timezone TZ           Timezone for autoconfig (default: UTC)
 #   --ssh-key FILE          SSH public key file to add for passwordless access
 #   --static-ip IP          Static IP address (use with --gateway, --netmask, --dns)
@@ -51,24 +51,33 @@ show_help() {
     exit 0
 }
 
+# Fail clearly when a value-taking option is given with no value (instead of a
+# cryptic "$2: unbound variable" under set -u).
+require_value() {
+    if [[ $# -lt 2 ]]; then
+        echo "Error: option '$1' requires a value" >&2
+        exit 1
+    fi
+}
+
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -v|--variant) VARIANT="$2"; shift 2 ;;
-        -r|--release) RELEASE="$2"; shift 2 ;;
-        --kernel) KERNEL="$2"; shift 2 ;;
+        -v|--variant) require_value "$@"; VARIANT="$2"; shift 2 ;;
+        -r|--release) require_value "$@"; RELEASE="$2"; shift 2 ;;
+        --kernel) require_value "$@"; KERNEL="$2"; shift 2 ;;
         -l|--list) LIST_MODE=true; shift ;;
         -d|--download) DOWNLOAD=true; shift ;;
-        -o|--output) OUTPUT_DIR="$2"; shift 2 ;;
-        --autoconfig) AUTOCONFIG_FILE="$2"; shift 2 ;;
-        --root-password) ROOT_PASSWORD="$2"; shift 2 ;;
-        --hostname) HOSTNAME="$2"; shift 2 ;;
-        --timezone) TIMEZONE="$2"; shift 2 ;;
-        --ssh-key) SSH_KEY_FILE="$2"; shift 2 ;;
-        --static-ip) STATIC_IP="$2"; shift 2 ;;
-        --gateway) GATEWAY="$2"; shift 2 ;;
-        --netmask) NETMASK="$2"; shift 2 ;;
-        --dns) DNS="$2"; shift 2 ;;
+        -o|--output) require_value "$@"; OUTPUT_DIR="$2"; shift 2 ;;
+        --autoconfig) require_value "$@"; AUTOCONFIG_FILE="$2"; shift 2 ;;
+        --root-password) require_value "$@"; ROOT_PASSWORD="$2"; shift 2 ;;
+        --hostname) require_value "$@"; HOSTNAME="$2"; shift 2 ;;
+        --timezone) require_value "$@"; TIMEZONE="$2"; shift 2 ;;
+        --ssh-key) require_value "$@"; SSH_KEY_FILE="$2"; shift 2 ;;
+        --static-ip) require_value "$@"; STATIC_IP="$2"; shift 2 ;;
+        --gateway) require_value "$@"; GATEWAY="$2"; shift 2 ;;
+        --netmask) require_value "$@"; NETMASK="$2"; shift 2 ;;
+        --dns) require_value "$@"; DNS="$2"; shift 2 ;;
         -h|--help) show_help ;;
         *) echo "Unknown option: $1" >&2; echo "Use -h for help." >&2; exit 1 ;;
     esac
@@ -81,6 +90,10 @@ SSH_KEY_FILE="${SSH_KEY_FILE/#\~/$HOME}"
 # Generate autoconfig if requested
 if [[ -n "$AUTOCONFIG_FILE" ]]; then
     echo "Generating Armbian autoconfig: $AUTOCONFIG_FILE"
+    if [[ -e "$AUTOCONFIG_FILE" ]]; then
+        cp -- "$AUTOCONFIG_FILE" "${AUTOCONFIG_FILE}.bak"
+        echo "  (existing file backed up to ${AUTOCONFIG_FILE}.bak)"
+    fi
     cat > "$AUTOCONFIG_FILE" << EOF
 # Armbian first run configuration
 # Place this file at /boot/armbian_first_run.txt on the SD card/eMMC
@@ -215,7 +228,7 @@ echo ""
 # escaped") and silently return no results. Reading from a file avoids that.
 RELEASES_JSON=$(mktemp)
 trap 'rm -f "$RELEASES_JSON"' EXIT
-if ! curl -sL "${API_URL}?per_page=30" -o "$RELEASES_JSON" || [[ ! -s "$RELEASES_JSON" ]]; then
+if ! curl -sL "${API_URL}?per_page=100" -o "$RELEASES_JSON" || [[ ! -s "$RELEASES_JSON" ]]; then
     echo "Error: Failed to fetch releases from GitHub"
     exit 1
 fi
@@ -227,7 +240,7 @@ if [[ "$LIST_MODE" == "true" ]]; then
 
     jq -r '
         .[].assets[]
-        | select(.name | test("Turing-rk1.*\\.img\\.xz$"))
+        | select(.name | test("Turing-rk1.*\\.img\\.xz$"; "i"))
         | "\(.name)\n  URL: \(.browser_download_url)\n  Size: \(.size / 1048576 | floor)MB\n"
     ' "$RELEASES_JSON" || echo "No Turing RK1 images found in recent releases"
 
