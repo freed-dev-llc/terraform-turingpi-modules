@@ -70,8 +70,7 @@ variable "portainer_ip" {
 }
 
 variable "grafana_password" {
-  description = "Grafana admin password"
+  description = "Grafana admin password (required; minimum 8 characters, enforced by the monitoring module)"
   type        = string
   sensitive   = true
-  default     = "admin"
 }

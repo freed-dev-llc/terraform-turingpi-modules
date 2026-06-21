@@ -66,10 +66,9 @@ variable "portainer_ip" {
 }
 
 variable "grafana_password" {
-  description = "Grafana admin password"
+  description = "Grafana admin password (required; minimum 8 characters, enforced by the monitoring module)"
   type        = string
   sensitive   = true
-  default     = "admin"
 }
 
 # =============================================================================
@@ -165,8 +164,10 @@ module "longhorn" {
 
 # Monitoring stack (Prometheus, Grafana, Alertmanager)
 module "monitoring" {
-  source     = "../../modules/addons/monitoring"
-  depends_on = [module.longhorn]
+  source = "../../modules/addons/monitoring"
+  # module.ingress provides the nginx IngressClass + admission webhook the
+  # Grafana ingress below needs — depend on it to avoid a webhook race.
+  depends_on = [module.longhorn, module.ingress]
 
   grafana_admin_password      = var.grafana_password
   grafana_persistence_enabled = true
