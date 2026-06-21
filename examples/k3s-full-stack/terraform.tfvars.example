@@ -5,19 +5,19 @@
 ssh_key_path = "~/.ssh/id_rsa"
 
 # Node IP addresses
-control_plane_ip = "192.168.1.101"
+control_plane_ip = "10.10.88.73"
 worker_ips = [
-  "192.168.1.102",
-  "192.168.1.103",
-  "192.168.1.104"
+  "10.10.88.74",
+  "10.10.88.75",
+  "10.10.88.76"
 ]
 
 # MetalLB IP range (must be on same subnet, outside DHCP range)
-metallb_ip_range = "192.168.1.200-192.168.1.220"
+metallb_ip_range = "10.10.88.80-10.10.88.89"
 
 # Static IPs for services
-ingress_ip   = "192.168.1.200"
-portainer_ip = "192.168.1.201"
+ingress_ip   = "10.10.88.80"
+portainer_ip = "10.10.88.81"
 
 # Grafana password (change this!)
 grafana_password = "your-secure-password"

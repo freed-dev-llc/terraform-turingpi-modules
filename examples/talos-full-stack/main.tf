@@ -59,7 +59,8 @@ module "talos_image" {
 
   talos_version = var.talos_version
   architecture  = var.talos_architecture
-  preset        = "longhorn" # Includes iscsi-tools + util-linux-tools
+  preset        = "longhorn"  # Includes iscsi-tools + util-linux-tools
+  sbc_overlay   = "turingrk1" # REQUIRED for Turing RK1 — without the Rockchip overlay the image won't boot / has no network
 }
 
 # =============================================================================
@@ -97,6 +98,10 @@ module "cluster" {
 
   cluster_name     = var.cluster_name
   cluster_endpoint = "https://${var.control_plane_ip}:6443"
+
+  # Match the flashed image's Talos version so machine config is generated
+  # against the right schema (otherwise the module uses the provider default).
+  talos_version = var.talos_version
 
   control_plane = [{ host = var.control_plane_ip }]
   workers = [
@@ -163,8 +168,10 @@ module "longhorn" {
 
 # Monitoring stack (Prometheus, Grafana, Alertmanager)
 module "monitoring" {
-  source     = "../../modules/addons/monitoring"
-  depends_on = [module.longhorn]
+  source = "../../modules/addons/monitoring"
+  # module.ingress provides the nginx IngressClass + admission webhook the
+  # Grafana ingress below needs — depend on it to avoid a webhook race.
+  depends_on = [module.longhorn, module.ingress]
 
   grafana_admin_password      = var.grafana_password
   grafana_persistence_enabled = true
