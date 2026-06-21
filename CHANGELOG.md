@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-06-20
+
+### Fixed
+
+- **`scripts/talos-wipe.sh`**: the `talosctl reset` wipe was built as a single space-joined string and passed to `run_cmd`, so in real (non-dry-run) mode it was exec'd as one `argv[0]` ("command not found", exit 127); the error was swallowed and the script reported success while **never wiping any disk**. The command is now built as an argument array. Also fixed two `((files_removed++))` increments that abort under `set -e` during `--clean-terraform`.
+- **`scripts/k3s-wipe.sh`**: fixed the same `((files_removed++))` `set -e` aborts, and hardened the NVMe wipe guard — an empty disk entry (e.g. a trailing comma in `-d`) bypassed the `test -b` existence check; empty entries are now skipped and the device path is quoted in the remote `test`/`umount`/`wipefs`/`dd`.
+- **`scripts/cluster-preflight.sh`**: the BMC API check used `curl` without `-f`, so invalid credentials (HTTP 401/403) were reported as "API accessible"; added `-f`. Power-state parsing now tolerates the BMC's quoted values (matching the wipe scripts). Node SSH checks use a new `--node-user` (default `root`) instead of reusing the BMC username.
+- **`scripts/find-armbian-image.sh`**: image download now uses `curl -fL --retry 3` plus an `xz -t` integrity check (previously a 404/error page was saved and reported as a successful download). A missing `--ssh-key` file now errors instead of being silently skipped while the summary claimed success (and a leading `~` is expanded). The generated autoconfig is now `chmod 600` (it holds the cleartext root password), a duplicate `FR_net_change_defaults` that disabled static-IP config was removed, and unknown options now exit non-zero.
+
 ## [1.7.0] - 2026-06-20
 
 ### Added

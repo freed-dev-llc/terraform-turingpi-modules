@@ -70,9 +70,13 @@ while [[ $# -gt 0 ]]; do
         --netmask) NETMASK="$2"; shift 2 ;;
         --dns) DNS="$2"; shift 2 ;;
         -h|--help) show_help ;;
-        *) echo "Unknown option: $1"; show_help ;;
+        *) echo "Unknown option: $1" >&2; echo "Use -h for help." >&2; exit 1 ;;
     esac
 done
+
+# Expand a leading ~ in the SSH key path (not done automatically when the value
+# comes from an =arg or a quoted string).
+SSH_KEY_FILE="${SSH_KEY_FILE/#\~/$HOME}"
 
 # Generate autoconfig if requested
 if [[ -n "$AUTOCONFIG_FILE" ]]; then
@@ -96,6 +100,8 @@ PRESET_USER_NAME=""
 PRESET_LOCALE="en_US.UTF-8"
 PRESET_TIMEZONE="${TIMEZONE}"
 EOF
+    # File holds the root password in cleartext — restrict to owner-only.
+    chmod 600 "$AUTOCONFIG_FILE"
 
     if [[ -n "$HOSTNAME" ]]; then
         {
@@ -109,7 +115,11 @@ EOF
     fi
 
     # Add SSH key if provided
-    if [[ -n "$SSH_KEY_FILE" && -f "$SSH_KEY_FILE" ]]; then
+    if [[ -n "$SSH_KEY_FILE" ]]; then
+        if [[ ! -f "$SSH_KEY_FILE" ]]; then
+            echo "Error: SSH key file not found: $SSH_KEY_FILE" >&2
+            exit 1
+        fi
         SSH_PUBKEY=$(cat "$SSH_KEY_FILE")
         cat >> "$AUTOCONFIG_FILE" << SSHEOF
 
@@ -142,7 +152,7 @@ SSHEOF
 
 # Static IP Configuration
 # Disables DHCP and sets static network configuration
-FR_net_change_defaults=0
+# (FR_net_change_defaults=1 is set above and must stay 1 for this to apply)
 FR_net_static_enabled=1
 FR_net_static_ip="${STATIC_IP}"
 FR_net_static_gateway="${GATEWAY}"
@@ -260,7 +270,21 @@ echo ""
 if [[ "$DOWNLOAD" == "true" ]]; then
     echo "Downloading to ${OUTPUT_DIR}/${IMAGE_NAME}..."
     mkdir -p "$OUTPUT_DIR"
-    curl -L -o "${OUTPUT_DIR}/${IMAGE_NAME}" "$IMAGE_URL"
+    # -f so an HTTP error (e.g. 404) fails instead of silently writing the error
+    # page to the image file, which would later be flashed to a node.
+    if ! curl -fL --retry 3 -o "${OUTPUT_DIR}/${IMAGE_NAME}" "$IMAGE_URL"; then
+        echo "Error: download failed for $IMAGE_URL" >&2
+        rm -f "${OUTPUT_DIR}/${IMAGE_NAME}"
+        exit 1
+    fi
+    # Verify archive integrity — a truncated download or error page is not valid xz.
+    if [[ "$IMAGE_NAME" == *.xz ]] && command -v xz &>/dev/null; then
+        if ! xz -t "${OUTPUT_DIR}/${IMAGE_NAME}" 2>/dev/null; then
+            echo "Error: downloaded file failed integrity check (corrupt or not an xz archive): ${OUTPUT_DIR}/${IMAGE_NAME}" >&2
+            rm -f "${OUTPUT_DIR}/${IMAGE_NAME}"
+            exit 1
+        fi
+    fi
     echo ""
     echo "Download complete: ${OUTPUT_DIR}/${IMAGE_NAME}"
 else

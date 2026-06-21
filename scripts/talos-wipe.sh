@@ -252,7 +252,7 @@ clean_terraform_state() {
             else
                 rm -f "$terraform_dir/$pattern"
             fi
-            ((files_removed++))
+            files_removed=$((files_removed + 1))
         fi
     done
 
@@ -262,7 +262,7 @@ clean_terraform_state() {
         else
             rm -rf "$terraform_dir/.terraform"
         fi
-        ((files_removed++))
+        files_removed=$((files_removed + 1))
     fi
 
     if [[ $files_removed -gt 0 ]]; then
@@ -315,23 +315,27 @@ log_step "Step $STEP: Wiping Talos system partitions (STATE, EPHEMERAL)..."
 STEP=$((STEP + 1))
 
 if [[ -f "$TALOSCONFIG" ]]; then
-    # Build wipe command
-    WIPE_CMD="talosctl --talosconfig $TALOSCONFIG reset --nodes $NODES --graceful=false"
-    WIPE_CMD+=" --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL"
+    # Build the wipe command as an ARRAY, not a space-joined string. Passing a
+    # single string to run_cmd would be exec'd as one argv[0] ("command not
+    # found", exit 127) — the failure was swallowed below, so the reset silently
+    # no-op'd in real mode while dry-run (which prints "$*") still looked fine.
+    WIPE_ARGS=(talosctl --talosconfig "$TALOSCONFIG" reset --nodes "$NODES" --graceful=false)
+    WIPE_ARGS+=(--system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL)
 
     # Add NVMe disks if enabled
     # Note: eMMC is system disk and cannot be wiped via talosctl reset
     if [[ "$WIPE_NVME" == "true" && -n "$USER_DISKS" ]]; then
         IFS=',' read -ra DISK_ARRAY <<< "$USER_DISKS"
         for disk in "${DISK_ARRAY[@]}"; do
-            WIPE_CMD+=" --user-disks-to-wipe $disk"
+            [[ -n "$disk" ]] || continue
+            WIPE_ARGS+=(--user-disks-to-wipe "$disk")
         done
     fi
 
     # Don't reboot - we want to shutdown
-    WIPE_CMD+=" --reboot=false"
+    WIPE_ARGS+=(--reboot=false)
 
-    run_cmd "$WIPE_CMD" || {
+    run_cmd "${WIPE_ARGS[@]}" || {
         log_warn "Reset command returned non-zero (node may already be in maintenance mode)"
     }
 else

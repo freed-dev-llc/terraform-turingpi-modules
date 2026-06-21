@@ -12,6 +12,7 @@
 #   -u, --user USER       BMC username (default: root)
 #   -p, --password PASS   BMC password (default: turing)
 #   -i, --ssh-key PATH    SSH private key for K3s (default: ~/.ssh/id_rsa)
+#   --node-user USER      SSH login user for node checks (default: root)
 #   --talosconfig PATH    Talosconfig path for Talos (default: ./talosconfig)
 #   -h, --help            Show this help message
 
@@ -24,6 +25,7 @@ BMC_IP=""
 BMC_USER=""
 BMC_PASSWORD=""
 SSH_KEY="$HOME/.ssh/id_rsa"
+NODE_SSH_USER="root"
 TALOSCONFIG="./talosconfig"
 
 # Load credentials from secrets files
@@ -91,6 +93,7 @@ while [[ $# -gt 0 ]]; do
         -u|--user) BMC_USER="$2"; shift 2 ;;
         -p|--password) BMC_PASSWORD="$2"; shift 2 ;;
         -i|--ssh-key) SSH_KEY="$2"; shift 2 ;;
+        --node-user) NODE_SSH_USER="$2"; shift 2 ;;
         --talosconfig) TALOSCONFIG="$2"; shift 2 ;;
         -h|--help) show_help ;;
         *) log_error "Unknown option: $1"; show_help ;;
@@ -216,7 +219,7 @@ else
 fi
 
 log_check "Checking BMC API access..."
-BMC_RESPONSE=$(curl -sk -u "${BMC_USER}:${BMC_PASSWORD}" \
+BMC_RESPONSE=$(curl -fsk -u "${BMC_USER}:${BMC_PASSWORD}" \
     "https://${BMC_IP}/api/bmc?opt=get&type=power" 2>/dev/null || echo "error")
 
 if [[ "$BMC_RESPONSE" != "error" && "$BMC_RESPONSE" != "" ]]; then
@@ -233,7 +236,9 @@ if [[ "$BMC_RESPONSE" != "error" && "$BMC_RESPONSE" != "" ]]; then
             *) slot=$((last_octet - 72)) ;;
         esac
 
-        power_state=$(echo "$BMC_RESPONSE" | grep -o "\"node${slot}\":[0-1]" | cut -d':' -f2 || echo "unknown")
+        # BMC returns quoted values, e.g. {"node1":"0",...}; tolerate optional
+        # quotes/whitespace (matches the wipe scripts' parser, see #52).
+        power_state=$(echo "$BMC_RESPONSE" | sed -nE "s/.*\"node${slot}\"[[:space:]]*:[[:space:]]*\"?([01])\"?.*/\1/p")
         if [[ "$power_state" == "1" ]]; then
             pass_check "Node $node (slot $slot): POWERED ON"
         elif [[ "$power_state" == "0" ]]; then
@@ -262,12 +267,12 @@ for node in "${NODE_ARRAY[@]}"; do
         if [[ "$CLUSTER_TYPE" == "k3s" ]]; then
             # Check SSH connectivity for K3s
             if ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no -o ConnectTimeout=5 \
-                "${BMC_USER}@${node}" "echo 'SSH OK'" &>/dev/null; then
+                "${NODE_SSH_USER}@${node}" "echo 'SSH OK'" &>/dev/null; then
                 pass_check "SSH connection to $node successful"
 
                 # Check for required packages
                 if ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no \
-                    "${BMC_USER}@${node}" "which iscsiadm" &>/dev/null; then
+                    "${NODE_SSH_USER}@${node}" "which iscsiadm" &>/dev/null; then
                     pass_check "open-iscsi installed on $node"
                 else
                     warn_check "open-iscsi NOT installed on $node (required for Longhorn)"
