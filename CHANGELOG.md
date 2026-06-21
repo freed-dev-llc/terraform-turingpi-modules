@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.2] - 2026-06-20
+
 ### Fixed
 
 - **`examples/`** — correctness/drift fixes in the full-stack examples (none are CI-validated): `talos-full-stack` now sets `sbc_overlay = "turingrk1"` (required for the RK1 to boot/network) and passes `talos_version` to the cluster module so machine config matches the flashed image; both examples drop the insecure 5-char `grafana_password` default (`admin`) that failed the monitoring module's ≥8-char validation on the default path, add `module.ingress` to the monitoring `depends_on` (avoids a Grafana-ingress admission-webhook race), and restandardize example IPs to the `10.10.88.x` scheme; the `talos-full-stack` `terraform.tfvars.example` no longer defaults `talos_firmware` to a stale local `v1.9.1` path (commented out so the generated overlay image is used).
