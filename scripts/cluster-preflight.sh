@@ -96,7 +96,7 @@ while [[ $# -gt 0 ]]; do
         --node-user) NODE_SSH_USER="$2"; shift 2 ;;
         --talosconfig) TALOSCONFIG="$2"; shift 2 ;;
         -h|--help) show_help ;;
-        *) log_error "Unknown option: $1"; show_help ;;
+        *) log_error "Unknown option: $1"; exit 1 ;;
     esac
 done
 
@@ -233,7 +233,10 @@ if [[ "$BMC_RESPONSE" != "error" && "$BMC_RESPONSE" != "" ]]; then
             74) slot=2 ;;
             75) slot=3 ;;
             76) slot=4 ;;
-            *) slot=$((last_octet - 72)) ;;
+            # Non-standard IP: only accept a slot that maps to a real BMC node
+            # (1-4); otherwise 0 so the lookup reports UNKNOWN rather than a
+            # garbage slot.
+            *) slot=$((last_octet - 72)); [[ $slot -ge 1 && $slot -le 4 ]] || slot=0 ;;
         esac
 
         # BMC returns quoted values, e.g. {"node1":"0",...}; tolerate optional
@@ -291,6 +294,8 @@ for node in "${NODE_ARRAY[@]}"; do
                 else
                     warn_check "Talos API not responding on $node (may be normal if not yet deployed)"
                 fi
+            else
+                warn_check "talosconfig not found ($TALOSCONFIG) - skipping Talos API check on $node"
             fi
         fi
     else
