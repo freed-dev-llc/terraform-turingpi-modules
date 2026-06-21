@@ -275,7 +275,7 @@ clean_terraform_state() {
             else
                 rm -f "$terraform_dir/$pattern"
             fi
-            ((files_removed++))
+            files_removed=$((files_removed + 1))
         fi
     done
 
@@ -285,7 +285,7 @@ clean_terraform_state() {
         else
             rm -rf "$terraform_dir/.terraform"
         fi
-        ((files_removed++))
+        files_removed=$((files_removed + 1))
     fi
 
     if [[ $files_removed -gt 0 ]]; then
@@ -398,13 +398,18 @@ if [[ "$WIPE_NVME" == "true" && -n "$USER_DISKS" ]]; then
     IFS=',' read -ra DISK_ARRAY <<< "$USER_DISKS"
     for node in "${NODE_ARRAY[@]}"; do
         for disk in "${DISK_ARRAY[@]}"; do
-            # Check if disk exists
-            if ssh_cmd "$node" "test -b $disk" 2>/dev/null; then
+            # Skip empty elements (e.g. a trailing comma in -d) — otherwise the
+            # remote `test -b` below gets no operand, evaluates the literal "-b"
+            # as a non-empty string (TRUE), and falls through to wipe an empty
+            # target.
+            [[ -n "$disk" ]] || continue
+            # Check if disk exists (quote the device on the remote side)
+            if ssh_cmd "$node" "test -b '$disk'" 2>/dev/null; then
                 log_info "  Wiping $disk on $node..."
                 # Unmount any partitions
-                ssh_cmd "$node" "umount ${disk}* 2>/dev/null" || true
+                ssh_cmd "$node" "umount '${disk}'* 2>/dev/null" || true
                 # Wipe partition table and first 100MB
-                ssh_cmd "$node" "wipefs -a $disk 2>/dev/null; dd if=/dev/zero of=$disk bs=1M count=100 2>/dev/null" || {
+                ssh_cmd "$node" "wipefs -a '$disk' 2>/dev/null; dd if=/dev/zero of='$disk' bs=1M count=100 2>/dev/null" || {
                     log_warn "  Failed to wipe $disk on $node"
                 }
             else
