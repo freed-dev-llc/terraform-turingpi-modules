@@ -13,7 +13,7 @@
 
   <rect x="1" y="1" width="798" height="238" rx="28" fill="url(#bg)" stroke="#2C4C61" stroke-width="1.5"/>
 
-  <!-- ICON: 2x2 node grid — control plane (terracotta) top-left, workers (Niagara), faint interconnect mesh -->
+  <!-- ICON: 2x2 node grid — control plane (terracotta) top-left, workers (Niagara), faint interconnect mesh, framed by module braces -->
   <g transform="translate(80,44)">
     <g stroke="#4E7C97" fill="none" stroke-linecap="round">
       <g opacity="0.5" stroke-width="3">
@@ -23,6 +23,11 @@
       <g opacity="0.26" stroke-width="2">
         <line x1="30" y1="30" x2="114" y2="114"/><line x1="114" y1="30" x2="30" y2="114"/>
       </g>
+    </g>
+    <!-- MODULE BRACES: cluster framed as a Terraform module (terracotta accent) -->
+    <g fill="none" stroke="#C4683F" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6">
+      <path d="M -8 -6 Q -18 -6 -18 28 Q -18 72 -26 72 Q -18 72 -18 116 Q -18 150 -8 150"/>
+      <path d="M 152 -6 Q 162 -6 162 28 Q 162 72 170 72 Q 162 72 162 116 Q 162 150 152 150"/>
     </g>
     <g stroke="#EAF2F7" stroke-opacity="0.10" stroke-width="1">
       <rect x="0" y="0" width="60" height="60" rx="13" fill="url(#cp)"/>
