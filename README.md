@@ -258,6 +258,12 @@ Tested and verified on v1.6.1 (modules) / v1.5.1 (provider):
 - Prometheus/Grafana with persistent storage
 - Ingress-NGINX with LoadBalancer service
 
+## Related Projects
+
+These modules provision the bare-metal Talos Linux + K3s/Armbian cluster for Turing Pi RK1:
+
+[![Turing RK1 Cluster — freed-dev-llc/turing-rk1-cluster](docs/assets/buttons/btn_turing_rk1_cluster.svg)](https://github.com/freed-dev-llc/turing-rk1-cluster)
+
 ## License
 
 Apache License 2.0
