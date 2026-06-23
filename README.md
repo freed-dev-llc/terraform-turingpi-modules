@@ -11,6 +11,26 @@
 
 Reusable Terraform modules for Turing Pi cluster provisioning and management.
 
+> **Part of the Turing Pi cluster stack:** these **modules** wrap the **provider**'s BMC operations into reusable Terraform; the cluster repos deploy Kubernetes on top — **Talos** or **K3s**.
+
+[![Terraform Provider — freed-dev-llc/terraform-provider-turingpi](docs/assets/buttons/btn_terraform_provider_turingpi.svg)](https://github.com/freed-dev-llc/terraform-provider-turingpi)
+[![Turing RK1 Ansible — freed-dev-llc/turing-ansible-cluster](docs/assets/buttons/btn_turing_ansible_cluster.svg)](https://github.com/freed-dev-llc/turing-ansible-cluster)
+[![Turing RK1 Cluster — freed-dev-llc/turing-rk1-cluster](docs/assets/buttons/btn_turing_rk1_cluster.svg)](https://github.com/freed-dev-llc/turing-rk1-cluster)
+
+## Contents
+
+- [Cluster Modules](#cluster-modules)
+- [Addon Modules](#addon-modules)
+- [Quick Start](#quick-start)
+- [Full Stack Example](#full-stack-example)
+- [Examples](#examples)
+- [Documentation](#documentation)
+- [Helper Scripts](#helper-scripts)
+- [Talos vs K3s](#talos-vs-k3s)
+- [Prerequisites](#prerequisites)
+- [Verified Configurations](#verified-configurations)
+- [License](#license)
+
 ## Cluster Modules
 
 | Module | Description |
@@ -31,7 +51,9 @@ Reusable Terraform modules for Turing Pi cluster provisioning and management.
 | [monitoring](./modules/addons/monitoring) | Prometheus, Grafana, Alertmanager stack |
 | [portainer](./modules/addons/portainer) | Cluster management agent (CE/BE) |
 
-## Quick Start - Talos
+## Quick Start
+
+### Talos
 
 ```hcl
 # Deploy Talos cluster
@@ -63,7 +85,7 @@ module "metallb" {
 }
 ```
 
-## Quick Start - K3s (Armbian)
+### K3s (Armbian)
 
 ```hcl
 # Deploy K3s cluster
@@ -241,7 +263,7 @@ module "monitoring" {
 }
 ```
 
-## Requirements
+## Prerequisites
 
 - Terraform >= 1.0
 - [Turing Pi Provider](https://github.com/freed-dev-llc/terraform-provider-turingpi) ~> 1.5 (for flashing)
@@ -257,12 +279,6 @@ Tested and verified on v1.6.1 (modules) / v1.5.1 (provider):
 - Longhorn with 2-replica volumes
 - Prometheus/Grafana with persistent storage
 - Ingress-NGINX with LoadBalancer service
-
-## Related Projects
-
-These modules provision the bare-metal Talos Linux + K3s/Armbian cluster for Turing Pi RK1:
-
-[![Turing RK1 Cluster — freed-dev-llc/turing-rk1-cluster](docs/assets/buttons/btn_turing_rk1_cluster.svg)](https://github.com/freed-dev-llc/turing-rk1-cluster)
 
 ## License
 
