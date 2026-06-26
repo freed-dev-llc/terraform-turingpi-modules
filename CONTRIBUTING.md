@@ -203,11 +203,24 @@ Releases are created by tagging the main branch. All releases are GPG-signed.
    git push origin main --tags
    ```
 
+5. Create the GitHub Release from the tag. The pushed tag does **not** create a
+   Release automatically (only the Terraform Registry auto-indexes tags), so this
+   step is required — skip it and the Registry will show the new version while
+   GitHub Releases still shows the previous one. Use the matching `CHANGELOG.md`
+   section as the body and `--verify-tag` so it never creates a new tag:
+
+   ```bash
+   gh release create v1.x.x --verify-tag --title v1.x.x --notes-file CHANGELOG-v1.x.x.md
+   ```
+
+   (Paste the version's `CHANGELOG.md` section into a temp file for `--notes-file`,
+   and end it with a `**Full Changelog**: …/compare/v1.<prev>...v1.x.x` link.)
+
 ### Post-Release
 
-After pushing the tag:
+After pushing the tag and creating the Release:
 
-1. Verify the release appears on [GitHub Releases](https://github.com/freed-dev-llc/terraform-turingpi-modules/releases)
+1. Verify the release appears on [GitHub Releases](https://github.com/freed-dev-llc/terraform-turingpi-modules/releases) and is marked **Latest**
 2. Confirm it syncs to [Terraform Registry](https://registry.terraform.io/modules/freed-dev-llc/modules/turingpi)
 
 ### Requirements
