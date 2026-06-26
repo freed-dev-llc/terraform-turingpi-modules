@@ -1,5 +1,7 @@
 terraform {
-  required_version = ">= 1.0"
+  # >= 1.2 for resource lifecycle preconditions (cross-variable hostname
+  # uniqueness check, #68).
+  required_version = ">= 1.2"
   required_providers {
     talos = {
       source  = "siderolabs/talos"

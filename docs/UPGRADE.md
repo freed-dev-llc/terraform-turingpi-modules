@@ -171,6 +171,23 @@ module "cert_manager" {
 
 ## Breaking Changes
 
+### v1.8.0
+
+**State migration required (`modules/talos-cluster`, `modules/k3s-cluster`):**
+
+- Per-node resources are now keyed by **node host** instead of list index (#69), so removing or reordering a node no longer re-targets config at the surviving nodes. This changes the resource instance addresses (`…["0"]` → `…["10.10.88.73"]`). **Re-map existing state with `tofu state mv` before your first `apply` on v1.8.0**, or Terraform will destroy/recreate the apply resources against live nodes (Talos rejects a re-applied hostname with `static hostname already set`; K3s re-runs the agent install). The per-module recipe is in each README under "Upgrading from < v1.8.0":
+  - Talos: `talos_machine_configuration_apply.{controlplane,worker}["<idx>"]` → `["<host>"]`
+  - K3s: `null_resource.{k3s_workers,bootstrap_ssh_workers}["<idx>"]` → `["<host>"]`
+  - `moved {}` blocks can't ship in the modules — the index→host mapping depends on your node list/order.
+
+**New plan-time validation:**
+
+- A duplicate `hostname` across `control_plane`/`workers` now **fails `terraform plan`** (#68) naming the duplicate, instead of silently producing colliding node identities. If your config reused a hostname, give each node a unique one (or leave it null/empty to keep the auto-generated/current name).
+
+**Minimum Terraform version:**
+
+- `required_version` raised `>= 1.0` → `>= 1.2` in both modules (for the lifecycle `precondition` backing the uniqueness check). Upgrade Terraform/OpenTofu if you pin below 1.2.
+
 ### v1.6.1
 
 **Changes (no breaks):**

@@ -69,7 +69,7 @@ module "cluster" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0 |
 | <a name="requirement_talos"></a> [talos](#requirement\_talos) | >= 0.7 |
 
@@ -138,6 +138,36 @@ name (`talos-<random>`).
 > Set hostnames before the nodes first boot into Talos (i.e. on a fresh
 > flash/build). To rename an existing node, wipe and re-provision it (see
 > [Resetting Talos Nodes](#resetting-talos-nodes)).
+
+Hostnames must be **unique** across `control_plane` and `workers`. Two nodes
+sharing a non-blank hostname would register under the same Kubernetes node
+identity (one node silently shadows the other). This is validated at plan time —
+`terraform plan` fails naming the duplicate. Null/empty/whitespace hostnames are
+exempt (each keeps its own Talos auto-generated name).
+
+## Upgrading from < v1.8.0 (state migration)
+
+v1.8.0 keys the `talos_machine_configuration_apply` resources by **node host**
+instead of list index, so adding/removing/reordering a node no longer re-targets
+config at the surviving nodes (#69). This changes the resource instance
+addresses. **Existing deployments must re-map state once** before the first
+`apply`, or Terraform will destroy and recreate the apply resources (re-pushing
+config to live nodes). Map each old index to its host, in the order the nodes
+appear in your `control_plane` / `workers` lists:
+
+```bash
+# control_plane[0].host = 10.10.88.73, workers = [10.10.88.74, 10.10.88.75, ...]
+tofu state mv 'module.<NAME>.talos_machine_configuration_apply.controlplane["0"]' \
+              'module.<NAME>.talos_machine_configuration_apply.controlplane["10.10.88.73"]'
+tofu state mv 'module.<NAME>.talos_machine_configuration_apply.worker["0"]' \
+              'module.<NAME>.talos_machine_configuration_apply.worker["10.10.88.74"]'
+tofu state mv 'module.<NAME>.talos_machine_configuration_apply.worker["1"]' \
+              'module.<NAME>.talos_machine_configuration_apply.worker["10.10.88.75"]'
+# …one line per worker. Then `tofu plan` should show no changes to these resources.
+```
+
+(`moved {}` blocks can't ship in the module: the index→host mapping depends on
+*your* node list, which the module can't know. Run the `state mv` above instead.)
 
 ## NVMe Storage Configuration
 

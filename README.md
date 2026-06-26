@@ -265,7 +265,7 @@ module "monitoring" {
 
 ## Prerequisites
 
-- Terraform >= 1.0
+- Terraform >= 1.2 (the `talos-cluster` / `k3s-cluster` modules use lifecycle preconditions)
 - [Turing Pi Provider](https://github.com/freed-dev-llc/terraform-provider-turingpi) ~> 1.5 (for flashing)
 - [Talos Provider](https://github.com/siderolabs/terraform-provider-talos) >= 0.7 (for Talos clusters)
 
