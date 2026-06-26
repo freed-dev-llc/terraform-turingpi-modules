@@ -24,6 +24,22 @@ locals {
 
   k3s_server_args_str = join(" ", local.k3s_server_args)
   k3s_agent_args_str  = join(" ", var.extra_agent_args)
+
+  # Cross-node hostname uniqueness (#68). A duplicate hostname makes two nodes
+  # register in Kubernetes under the same node identity (kubelet registration
+  # collision — one node shadows the other) with no plan-time signal. The
+  # per-variable validation blocks can only check format within one variable,
+  # so uniqueness across control_plane + workers is asserted by a precondition
+  # on null_resource.k3s_control_plane (always present). control_plane is a
+  # single object, so it's wrapped before concat. Compare the compacted,
+  # trimmed hostnames; null/empty/whitespace stay exempt (no-op).
+  all_hostnames = compact([
+    for node in concat([var.control_plane], var.workers) : try(trimspace(node.hostname), "")
+  ])
+  duplicate_hostnames = distinct([
+    for h in local.all_hostnames : h
+    if length([for x in local.all_hostnames : x if x == h]) > 1
+  ])
 }
 
 # =============================================================================
@@ -42,7 +58,9 @@ data "tls_public_key" "cp_bootstrap" {
 }
 
 data "tls_public_key" "workers_bootstrap" {
-  for_each        = { for idx, w in var.workers : idx => w if w.ssh_key != null && w.ssh_password != null }
+  # Keyed by host (not list index) so removing/reordering a worker doesn't
+  # re-run provisioners against a shifted host (#69).
+  for_each        = { for w in var.workers : w.host => w if w.ssh_key != null && w.ssh_password != null }
   private_key_pem = each.value.ssh_key
 }
 
@@ -73,7 +91,8 @@ resource "null_resource" "bootstrap_ssh_cp" {
 }
 
 resource "null_resource" "bootstrap_ssh_workers" {
-  for_each = { for idx, w in var.workers : idx => w if w.ssh_key != null && w.ssh_password != null }
+  # Keyed by host (not list index) — see data.tls_public_key.workers_bootstrap (#69).
+  for_each = { for w in var.workers : w.host => w if w.ssh_key != null && w.ssh_password != null }
 
   triggers = {
     host   = each.value.host
@@ -105,6 +124,14 @@ resource "null_resource" "bootstrap_ssh_workers" {
 # Prepare and install K3s on control plane
 resource "null_resource" "k3s_control_plane" {
   depends_on = [null_resource.bootstrap_ssh_cp]
+
+  lifecycle {
+    # Fail the plan when two nodes share a non-blank hostname (#68).
+    precondition {
+      condition     = length(local.duplicate_hostnames) == 0
+      error_message = "Node hostnames must be unique across control_plane and workers. Duplicate hostname(s): ${join(", ", local.duplicate_hostnames)}."
+    }
+  }
 
   triggers = {
     host               = var.control_plane.host
@@ -225,7 +252,10 @@ resource "null_resource" "k3s_control_plane" {
 
 # Prepare and install K3s agent on workers
 resource "null_resource" "k3s_workers" {
-  for_each = { for idx, worker in var.workers : idx => worker }
+  # Keyed by host (not list index) so removing/reordering a worker doesn't
+  # shift the keys of the remaining workers and re-run the install provisioners
+  # against a different node (#69). each.key is the host in the log lines below.
+  for_each = { for worker in var.workers : worker.host => worker }
 
   depends_on = [
     null_resource.k3s_control_plane,

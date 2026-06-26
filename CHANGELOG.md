@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-06-26
+
+> **Action required for existing deployments.** This release re-keys per-node
+> resources by host (see *Changed*). Run the documented one-time `tofu state mv`
+> **before** your first `apply` on v1.8.0, or Terraform will destroy and recreate
+> those resources against live nodes. Migration steps are in each module README
+> ("Upgrading from < v1.8.0").
+
+### Added
+
+- **`modules/talos-cluster`** and **`modules/k3s-cluster`**: plan-time **hostname uniqueness** validation across `control_plane` + `workers` (#68). When two nodes are assigned the same non-blank `hostname` they register under the same Talos/Kubernetes node identity (kubelet registration collision — one node silently shadows the other), previously with no plan-time signal. A resource `lifecycle` precondition now fails `terraform plan` with a message naming the duplicate hostname(s). Null/empty/whitespace hostnames stay exempt (each node keeps its auto-generated/current name), matching the existing per-node format validation. A `precondition` is the lightest mechanism that actually *fails* the plan — a `check {}` block only emits a warning, and cross-variable `validation` requires Terraform `>= 1.9` — so this raises the module floor to `>= 1.2` (see *Changed*).
+
+### Changed
+
+- **`modules/talos-cluster`** and **`modules/k3s-cluster`**: the per-node apply resources now key `for_each` by **node host** instead of list index (#69). The Talos `talos_machine_configuration_apply.{controlplane,worker}` and the K3s `null_resource.{k3s_workers,bootstrap_ssh_workers}` / `data.tls_public_key.workers_bootstrap` were keyed positionally, so **removing or reordering a node shifted every later index** — Terraform then re-targeted the surviving instances at a *different* host (re-pushing Talos machine config, which a live node rejects with `static hostname already set`, or re-running the K3s install provisioners). Keying by the stable host eliminates that drift. The Talos `local.hostname_patches` map is now host-keyed to match.
+  - **Migration:** instance addresses change from `…["0"]` to `…["10.10.88.73"]`, so existing state must be re-mapped once with `tofu state mv` before the next `apply` (recipe in each module README). `moved {}` blocks can't ship in the modules because the index→host mapping depends on the consumer's node list/order, which a reusable module can't know.
+- **`modules/talos-cluster`** and **`modules/k3s-cluster`**: `required_version` bumped `>= 1.0` → `>= 1.2` (for the lifecycle `precondition` above). The `>= 1.2` floor is the minimum that supports plan-failing preconditions; READMEs' Requirements tables updated to match.
+
 ## [1.7.2] - 2026-06-20
 
 ### Fixed
@@ -400,7 +418,11 @@ No breaking changes. Module input/output signatures unchanged. The `talos-image`
 - **metallb addon** - MetalLB load balancer
 - **ingress-nginx addon** - NGINX Ingress controller
 
-[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.6.1...HEAD
+[Unreleased]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.7.2...v1.8.0
+[1.7.2]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.7.1...v1.7.2
+[1.7.1]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.7.0...v1.7.1
+[1.7.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.6.1...v1.7.0
 [1.6.1]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/freed-dev-llc/terraform-turingpi-modules/compare/v1.4.2...v1.5.0

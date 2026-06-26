@@ -126,7 +126,7 @@ module "k3s" {
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.2 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.0 |
@@ -197,6 +197,35 @@ module "k3s" {
   hostname     = optional(string) # Custom hostname
 }
 ```
+
+`hostname` must be **unique** across `control_plane` and `workers` — two nodes
+sharing a non-blank hostname collide on K3s's hostname-based node identity. This
+is validated at plan time (`terraform plan` fails naming the duplicate).
+Null/empty/whitespace hostnames are exempt (each node keeps its current name).
+
+### Upgrading from < v1.8.0 (state migration)
+
+v1.8.0 keys the per-worker resources (`null_resource.k3s_workers`,
+`null_resource.bootstrap_ssh_workers`) by **worker host** instead of list index,
+so adding/removing/reordering a worker no longer re-runs the install
+provisioners against the surviving workers (#69). This changes the resource
+instance addresses. **Existing deployments must re-map state once** before the
+first `apply`, or Terraform will destroy and recreate those resources
+(re-running the agent install). Map each old index to its host, in the order the
+workers appear in your `workers` list:
+
+```bash
+# workers = [10.10.88.74, 10.10.88.75, ...]
+tofu state mv 'module.<NAME>.null_resource.k3s_workers["0"]' \
+              'module.<NAME>.null_resource.k3s_workers["10.10.88.74"]'
+tofu state mv 'module.<NAME>.null_resource.bootstrap_ssh_workers["0"]' \
+              'module.<NAME>.null_resource.bootstrap_ssh_workers["10.10.88.74"]'
+# …one pair of lines per worker. The tls_public_key data source re-reads itself,
+# so it needs no mv. Then `tofu plan` should show no changes to these resources.
+```
+
+(`moved {}` blocks can't ship in the module: the index→host mapping depends on
+*your* `workers` list, which the module can't know. Run the `state mv` above.)
 
 ## K3s Configuration
 
