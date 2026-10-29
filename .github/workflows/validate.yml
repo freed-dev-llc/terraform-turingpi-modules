@@ -17,8 +17,7 @@ permissions:
 jobs:
   validate:
     name: Validate
-    runs-on: [self-hosted, linux]
-
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -41,7 +40,8 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
 
-      # Defensive: the self-hosted runner's $HOME is persistent across jobs.
+      # Defensive: on a persistent runner, $HOME survives across jobs (GitHub-hosted
+      # runners start clean, where this step does nothing).
       # Other workflows (e.g. terraform-provider-turingpi's cli-smoketest)
       # write dev_overrides into ~/.terraformrc that reference per-run $RUNNER_TEMP
       # paths long since gone, which then break `terraform init` here with
@@ -74,8 +74,7 @@ jobs:
 
   security:
     name: Security Scan
-    runs-on: [self-hosted, linux]
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
